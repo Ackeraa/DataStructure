@@ -1,6 +1,6 @@
 # Range Minimun Queries(Part One)
 
-**算法[讲解]()**
+**算法[讲解](https://Ackeraa.github.io/2020/10/29/rmq/)**
 
 **代码目录：**
 
