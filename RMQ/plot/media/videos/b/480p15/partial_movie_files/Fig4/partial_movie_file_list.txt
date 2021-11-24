@@ -1,8 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/921711572_4287331922_839213144.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2674735366_2783251720.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2741627606_1568984396.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2741627606_3222268932.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2741627606_2297010961.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2741627606_2649596657.mp4'
-file 'file:/Users/gsx/MyProgram/Python/DataStructure/RMQ/plot/media/videos/b/480p15/partial_movie_files/Fig4/544358931_2741627606_1144359291.mp4'
