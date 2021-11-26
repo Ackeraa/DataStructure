@@ -197,35 +197,145 @@ class Fig3(Scene):
 class Fig4(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        node = Node("112")
-        self.add(node)
-        node.shift(RIGHT * 2)
+        tr = [[-1, 1], [-1, 2], [-1, -1], [0, 4], [-1, 5], [-1, 6], [-1, -1], [3, 14],
+             [-1, -1], [8, -1], [9, 12], [-1, -1], [11, 13], [-1, -1], [10, -1]]
+        nodes = [Node(str(i)) for i in range(15)]
+        for i in range(len(tr)):
+            if tr[i][0] != -1:
+                nodes[i].add_l_child(nodes[tr[i][0]])
+            if tr[i][1] != -1:
+                nodes[i].add_r_child(nodes[tr[i][1]])
+
+        tree = Tree(nodes[7])
+        tree.build()
+        tree.move_to(UP * 0.2)
+        
+        a = get_array(15, 0.8)
+        vv = [31, 41, 59, 26, 53, 58, 97, 23, 93, 84, 33, 64, 62, 83, 27]
+        vg = VGroup(tree, a).arrange(DOWN, buff=0.2)
+        v = put_values_in_array(a, vv)
+        self.add(vg, v)
+
+        for i in range(15):
+            n_pos = nodes[i].get_center()
+            a_pos = a[i].get_center()
+            nodes[i].move_to([a_pos[0], n_pos[1], 0])
+
+        interval = [[0, 2], [11, 13], [0, 6], [4, 9], [0, 14]]
+        for l, r in interval:
+            self.play(Create(self.plot_rect(r - l + 1, a[l].get_center(), RED_E)))
+            self.wait(0.5)
+            i = vv.index(min(vv[l:r+1]))
+            a[i].set_fill(RED_E, 0.5)
+            nodes[i].set_node_fill(RED_E, 0.5)
+            self.wait(0.3)
+            a[i].set_fill(WHITE, 0.5)
+            nodes[i].set_node_fill(WHITE, 0.5)
+            self.add(self.plot_rect(r - l + 1, a[l].get_center(), BLACK))
         self.wait()
-        self.play(node.trans_value("234"))
-        #node.set_value("sd")
-        self.wait()
-        node.shift(RIGHT * 2)
-        self.wait()
-        node.set_value_color(RED_E)
-        self.wait()
-        node.set_node_color(RED_E)
-        self.wait()
-        node.set_node_fill(BLUE)
-        self.wait()
+    
+    def plot_rect(self, width, pos, color):
+        rect = Rectangle(width=width*0.8, height=0.8)
+        rect.move_to([pos[0] + (width - 1) * 0.8 / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect
 
 class Fig5(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        node1 = Node("1")
-        tree = Tree(node1)
+        nodes = [Node(str(i), size=0.4) for i in range(7)]
+        nodes[1].dth = nodes[5].dth = 1
+        nodes[0].dth = nodes[2].dth = nodes[4].dth = nodes[6].dth = 2
+        a = get_array(7)
+        a.to_corner(DOWN)
+        vv = [4, 2, 5, 1, 7, 3, 6]
+        v = put_values_in_array(a, vv)
+        self.add(a, v)
 
-        node2 = Node("2")
-        node3 = Node("3")
+        self.play(Create(self.plot_rect(7, a[0].get_center(), RED_E)))
+        self.wait(0.5)
+        a[3].set_fill(RED_E, 0.5)
+        nodes[3].move_to(UP*2)
+        self.add(nodes[3])
+        self.wait(0.3)
+        a[3].set_fill(WHITE, 0.5)
+        self.add(self.plot_rect(7, a[0].get_center(), BLACK))
+        self.wait(0.3)
 
-        tree.connect_l(node1, node2)
-        tree.connect_r(node1, node3)
+        self.sub_plot(0, 2, 1, a, nodes[3], nodes[1])
+        self.sub_plot(0, 0, 0, a, nodes[1], nodes[0])
+        self.sub_plot(2, 2, 2, a, nodes[1], nodes[2])
+        self.sub_plot(4, 6, 5, a, nodes[3], nodes[5])
+        self.sub_plot(4, 4, 4, a, nodes[5], nodes[4])
+        self.sub_plot(6, 6, 6, a, nodes[5], nodes[6])
 
-        self.add(tree)
-        self.wait()
-        tree.to_corner(UP)
-        self.wait()
+
+        
+    def sub_plot(self, l, r, x, a, u, v):
+        self.play(Create(self.plot_rect(r - l + 1, a[l].get_center(), RED_E)))
+        self.wait(0.5)
+        a[x].set_fill(RED_E, 0.5)
+        a_pos = a[x].get_center()
+        v.move_to([a_pos[0], 2 - v.dth, 0])
+        line = Line(u, v, color=BLACK)
+        self.add(v, line)
+
+        self.wait(0.3)
+        a[x].set_fill(WHITE, 0.5)
+        self.add(self.plot_rect(r - l + 1, a[l].get_center(), BLACK))
+        self.wait(0.3)
+
+    def plot_rect(self, width, pos, color):
+        rect = Rectangle(width=width, height=1)
+        rect.move_to([pos[0] + (width - 1) / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect
+
+class Fig6(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        nodes = [Node(str(i), size=0.4) for i in range(5)]
+        for i in range(5):
+            nodes[i].dth = i
+        a = get_array(5)
+        a.to_corner(DOWN)
+        vv = [1, 2, 3, 4, 5]
+        v = put_values_in_array(a, vv)
+        self.add(a, v)
+
+        self.play(Create(self.plot_rect(5, a[0].get_center(), RED_E)))
+        self.wait(0.5)
+        a[0].set_fill(RED_E, 0.5)
+        self.add(nodes[0])
+        nodes[0].move_to([a[0].get_center()[0], 3, 0])
+        self.wait(0.3)
+        a[0].set_fill(WHITE, 0.5)
+        self.add(self.plot_rect(5, a[0].get_center(), BLACK))
+        self.wait(0.3)
+
+        self.sub_plot(1, 4, 1, a, nodes[0], nodes[1])
+        self.sub_plot(2, 4, 2, a, nodes[1], nodes[2])
+        self.sub_plot(3, 4, 3, a, nodes[2], nodes[3])
+        self.sub_plot(4, 4, 4, a, nodes[3], nodes[4])
+
+
+        
+    def sub_plot(self, l, r, x, a, u, v):
+        self.play(Create(self.plot_rect(r - l + 1, a[l].get_center(), RED_E)))
+        self.wait(0.5)
+        a[x].set_fill(RED_E, 0.5)
+        a_pos = a[x].get_center()
+        v.move_to([a_pos[0], 3 - v.dth, 0])
+        line = Line(u, v, color=BLACK)
+        self.add(v, line)
+
+        self.wait(0.3)
+        a[x].set_fill(WHITE, 0.5)
+        self.add(self.plot_rect(r - l + 1, a[l].get_center(), BLACK))
+        self.wait(0.3)
+
+    def plot_rect(self, width, pos, color):
+        rect = Rectangle(width=width, height=1)
+        rect.move_to([pos[0] + (width - 1) / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect

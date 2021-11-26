@@ -19,7 +19,7 @@ def get_node(size=1, color=BLACK):
     return node
 
 class Node(VGroup):
-    def __init__(self, value="", size=0.5, node_color=BLACK, text_color=BLACK):
+    def __init__(self, value="", size=0.3, node_color=BLACK, text_color=BLACK):
         self.node = Circle(size).set_color(node_color)
         self.value = Text(value, color=text_color).scale(0.6).move_to(self.node.get_center())
         self.dth = 0
@@ -45,8 +45,8 @@ class Node(VGroup):
     def set_node_color(self, color):
         self.node.set_color(color)
 
-    def set_node_fill(self, color):
-        self.node.set_fill(color, opacity=1)
+    def set_node_fill(self, color, opacity):
+        self.node.set_fill(color, opacity=opacity)
 
     def add_l_child(self, l_child):
         self.l_child = l_child
@@ -66,41 +66,41 @@ class Tree(VGroup):
     def __init__(self, root):
         super().__init__()
         self.root = root
-        super().add(self.root)
-
-    def __dfs(self, u, d):
-        u.dth = d
-        self.width[d] += 1
-        if u.l_child != None:
-            self.__dfs(u.l_child, d + 1)
-        if u.r_child != None:
-            self.__dfs(u.r_child, d + 1)
+        self.add(self.root)
 
     def connect_l(self, u, v):
-        self.__connect(u, v, 'l')
+        self.__connect(u, v, v.dth, 'l')
 
     def connect_r(self, u, v):
-        self.__connect(u, v, 'r')
+        self.__connect(u, v, v.dth, 'r')
 
-    def __connect(self, u, v, which):
-        rad = u.node.radius * math.cos(45*math.pi/180)
+    def __connect(self, u, v, d, which):
+        w = config['frame_width'] / pow(2, d + 1)
         if which == 'l':
-            pos = DL * 2
-            vec = [[-rad, -rad, 0], [rad, rad, 0]]
+            dirs = DOWN * 1.5 + LEFT * w
+            rad = u.node.radius / math.sqrt(dirs[0] ** 2 + dirs[1] ** 2)
+            dx = rad * dirs[0]
+            dy = rad * dirs[1]
+            vec = [[dx , dy, 0], [-dx, -dy, 0]]
         else:
-            pos = DR * 2
-            vec = [[rad, -rad, 0], [-rad, rad, 0]]
-        v.next_to(u, pos)
-        always(v.next_to, u, pos)
+            dirs = DOWN * 1.5 + RIGHT * w
+            rad = u.node.radius / math.sqrt(dirs[0] ** 2 + dirs[1] ** 2)
+            dx = rad * dirs[0]
+            dy = rad * dirs[1]
+            vec = [[dx, dy, 0], [-dx, -dy, 0]]
+        pos = u.get_center() + dirs
+        v.move_to(pos)
+        #v.add_updater(lambda m: m.move_to(u.get_center() + dirs))
 
         p1 = u.get_center() + vec[0]
         p2 = v.get_center() + vec[1]
         e = Line(p1, p2, color=BLACK)
+        e.add_updater(lambda m: m.put_start_and_end_on(u.get_center() + vec[0],
+                                                       v.get_center() + vec[1]))
         self.add(v, e)
 
     def build(self):
         q = Queue()
-        self.add(self.root)
         q.put(self.root)
         while not q.empty():
             u = q.get()
@@ -108,10 +108,10 @@ class Tree(VGroup):
             r = u.r_child
             if l != None:
                 l.dth = u.dth + 1
-                self.connect(u, l, 'l')
+                self.__connect(u, l, l.dth, 'l')
                 q.put(l)
             if r != None:
                 r.dth = u.dth + 1
-                self.connect(u, r, 'r')
+                self.__connect(u, r, r.dth, 'r')
                 q.put(r)
 
