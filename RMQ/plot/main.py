@@ -208,17 +208,24 @@ class Fig4(Scene):
         self.wait()
         node.set_value_color(RED_E)
         self.wait()
-        node.set_color(RED_E)
+        node.set_node_color(RED_E)
         self.wait()
-        node.set_fill(BLUE)
+        node.set_node_fill(BLUE)
         self.wait()
 
 class Fig5(Scene):
     def construct(self):
-        text1 = Text("Hello")
-        text2 = Text("World")
-        self.add(text1)
+        self.camera.background_color = WHITE
+        node1 = Node("1")
+        tree = Tree(node1)
+
+        node2 = Node("2")
+        node3 = Node("3")
+
+        tree.connect_l(node1, node2)
+        tree.connect_r(node1, node3)
+
+        self.add(tree)
         self.wait()
-        self.play(Transform(text1, text2))
-        text1.set_color(RED)
+        tree.to_corner(UP)
         self.wait()
