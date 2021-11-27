@@ -23,8 +23,11 @@ class Node(VGroup):
         self.node = Circle(size).set_color(node_color)
         self.value = Text(value, color=text_color).scale(0.6).move_to(self.node.get_center())
         self.dth = 0
+        self.index = int(value)
         self.l_child = None
         self.r_child = None
+        self.l_line = None
+        self.r_line = None
         f_always(self.value.move_to, self.node.get_center)
         super().__init__(self.node, self.value)
 
@@ -62,6 +65,7 @@ class Node(VGroup):
         always(self.r_child.next_to, self, DR*2)
         '''
 
+
 class Tree(VGroup):
     def __init__(self, root):
         super().__init__()
@@ -77,7 +81,7 @@ class Tree(VGroup):
     def __connect(self, u, v, d, which):
         w = config['frame_width'] / pow(2, d + 1)
         if which == 'l':
-            dirs = DOWN * 1.5 + LEFT * w
+            dirs = DOWN + LEFT * w
             rad = u.node.radius / math.sqrt(dirs[0] ** 2 + dirs[1] ** 2)
             dx = rad * dirs[0]
             dy = rad * dirs[1]
@@ -97,7 +101,7 @@ class Tree(VGroup):
         e = Line(p1, p2, color=BLACK)
         e.add_updater(lambda m: m.put_start_and_end_on(u.get_center() + vec[0],
                                                        v.get_center() + vec[1]))
-        self.add(v, e)
+        self.add(v)
 
     def build(self):
         q = Queue()

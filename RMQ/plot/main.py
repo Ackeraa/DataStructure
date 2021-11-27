@@ -339,3 +339,104 @@ class Fig6(Scene):
         rect.move_to([pos[0] + (width - 1) / 2, pos[1], pos[2]])
         rect.set_stroke(color)
         return rect
+
+class Fig7(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        vv = [2, 4, 6, 8, 10, 12]
+        #vv = [27, 18, 28, 18, 28, 45, 90, 45, 23, 53, 60, 28, 74, 71, 35]
+        nodes = [Node(str(i)) for i in range(len(vv))]
+        nodes2 = [Node(str(i)) for i in range(len(vv))]
+        a = get_array(len(vv), 0.7)
+        a.to_corner(DOWN)
+        v = put_values_in_array(a, vv)
+        self.add(a, v)
+        
+        left_line = Line([5, -3, 0], [5, 2, 0], color=BLACK)
+        right_line = Line([6, -3, 0], [6, 2, 0], color=BLACK)
+        bottom_line = Line([5, -3, 0], [6, -3, 0], color=BLACK)
+        self.add(left_line, right_line, bottom_line)
+        self.wait()
+
+        tree = self.build(vv, nodes)
+        tree.build()
+        for i in range(len(nodes)):
+            n_pos = nodes[i].get_center()
+            a_pos = a[i].get_center()
+            nodes[i].move_to([a_pos[0], 3.5 - nodes[i].dth, 0])
+        
+        fake_rect = Rectangle().move_to([5.5, -3.25, 0])
+        stk = [fake_rect]
+        stack = []
+        root = None
+        for i in range(len(vv)):
+            a[i].set_fill(RED_E, 0.5)
+            self.wait(0.6)
+            new_node = nodes[i]
+            self.add(new_node)
+            last_poped_node = None
+            while len(stack) > 0 and vv[stack[-1].index] > vv[i]:
+                last_poped_node = stack.pop()
+                if len(stack) <= 0 or vv[stack[-1].index] <= vv[i]:
+                    break
+                self.play(FadeOut(stk.pop(), shift=RIGHT))
+            self.wait(0.2)
+            if last_poped_node != None:
+                self.play(Transform(stk.pop(), last_poped_node))
+                if new_node.l_line:
+                    new_node.add_l_child(last_poped_node)
+                    line = Line(new_node, last_poped_node, color=BLACK)
+                    self.play(ReplacementTransform(new_node.l_line, line))
+                    new_node.l_line = line
+                else:
+                    new_node.add_l_child(last_poped_node)
+                    line = Line(new_node, last_poped_node, color=BLACK)
+                    new_node.l_line = line
+                    self.play(Create(line))
+            if len(stack) > 0:
+                #self.play(ReplacementTransform(stk[-1].copy(), stack[-1]))
+                if stack[-1].r_line:
+                    stack[-1].add_r_child(new_node)
+                    line = Line(stack[-1], new_node, color=BLACK)
+                    self.play(ReplacementTransform(stack[-1].r_line, line))
+                    stack[-1].r_line = line
+                else:
+                    stack[-1].add_r_child(new_node)
+                    line = Line(stack[-1], new_node, color=BLACK)
+                    stack[-1].r_line = line
+                    self.play(Create(line))
+            else:
+                root = new_node
+            stack.append(new_node)
+            rect = Rectangle(width=1, height=0.5, color=BLACK).next_to(stk[-1].get_center(), UP)
+            text = Text(str(vv[i]), color=BLACK).scale(0.6).move_to(rect.get_center())
+            vg = VGroup(rect, text)
+            stk.append(vg)
+            self.play(ReplacementTransform(v[i].copy(), vg))
+            self.wait()
+            a[i].set_fill(WHITE, 0.5)
+
+        while len(stk) > 0:
+            self.play(FadeOut(stk.pop(), shift=RIGHT))
+
+    def build(self, vv, nodes):
+        stack = []
+        root = None
+        for i in range(len(vv)):
+            new_node = nodes[i]
+            last_poped_node = None
+            while len(stack) > 0 and vv[stack[-1].index] > vv[i]:
+                last_poped_node = stack.pop()
+            new_node.add_l_child(last_poped_node)
+            if len(stack) > 0:
+                stack[-1].add_r_child(new_node)
+            else:
+                root = new_node
+            stack.append(new_node)
+        return Tree(root)
+
+    def plot_rect(self, width, pos, color):
+        rect = Rectangle(width=width, height=1)
+        rect.move_to([pos[0] + (width - 1) / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect

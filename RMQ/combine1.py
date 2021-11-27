@@ -1,4 +1,4 @@
-from math import sqrt, log, pow, inf
+from math import sqrt, log, inf
 from st import St
 
 class Combine1(object):
@@ -36,6 +36,7 @@ class Combine1(object):
         if ith + 1 <= jth - 1:
             ans = min(ans, self.st.rmq(ith + 1, jth - 1))
         return ans
+
 if __name__ == '__main__': 
     a = [3, 5, 4, 1, 2, 9, 7, 6, 5, 8, 2, 4, 7, 4]
     combine1 = Combine1(a)

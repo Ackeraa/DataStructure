@@ -1,4 +1,4 @@
-from math import pow, log 
+from math import log 
 
 class St(object):
     def __init__(self, a):

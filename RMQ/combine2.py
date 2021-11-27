@@ -1,4 +1,4 @@
-from math import sqrt, log, pow, inf
+from math import sqrt, log, inf
 from st import St
 
 class Combine2(object):
@@ -20,7 +20,7 @@ class Combine2(object):
         self.st = St(f)
         self.st.preprocess()
 
-        # ST winth block.
+        # ST within blocks.
         self.sts = []
         for i in range(self.cnt_b):
             tmp = self.a[i * self.len_b : min(self.n, i * self.len_b + self.len_b)]

@@ -2,11 +2,13 @@ import unittest
 import random
 from brute import Brute
 from dp import Dp
+from dp2 import Dp as Dp2
 from block import Block
 from st import St
 from combine1 import Combine1
 from combine2 import Combine2
 from combine3 import Combine3
+from combine4 import Combine4
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -22,6 +24,7 @@ class Test(unittest.TestCase):
         self.combine1 = Combine1(a)
         self.combine2 = Combine2(a)
         self.combine3 = Combine3(a)
+        self.combine4 = Combine4(a)
 
     def all_equal(self, func):
         for i in range(self.n):
@@ -52,6 +55,10 @@ class Test(unittest.TestCase):
     def test_combine3(self):
         self.combine3.preprocess()
         self.all_equal(self.combine3)
+
+    def test_combine4(self):
+        self.combine4.preprocess()
+        self.all_equal(self.combine4)
 
 if __name__ == "__main__":
     unittest.main()
