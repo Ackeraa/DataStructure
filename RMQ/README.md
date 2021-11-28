@@ -11,4 +11,5 @@
 * [组合1（稀疏表+无预处理）](https://github.com/Ackeraa/DataStructure/edit/master/RMQ/combine1.py)
 * [组合2（稀疏表+稀疏表）](https://github.com/Ackeraa/DataStructure/edit/master/RMQ/combine2.py)
 * [组合3（稀疏表+组合1）](https://github.com/Ackeraa/DataStructure/edit/master/RMQ/combine3.py)
+* [组合4（Fischer Heun）](https://github.com/Ackeraa/DataStructure/edit/master/RMQ/combine4.py)
 
