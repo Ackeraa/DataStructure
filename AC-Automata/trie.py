@@ -37,7 +37,5 @@ class Trie:
 if __name__ == '__main__':
     patterns = ["ab", "about", "at", "ate", "be", "bed", "edge", "get"]
     text = "abedget"
-    patterns = ['dda', 'efgbe', 'bdd', 'abd', 'b', 'gac', 'afd', 'e', 'dgffd']
-    text = "gcaebdcegg"
     trie = Trie(patterns)
     print(trie.match(text))
