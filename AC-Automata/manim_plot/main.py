@@ -330,14 +330,81 @@ class ACAutomata(Scene):
                 anim  = pj.animate.next_to(text[j], DOWN, buff=0.1)
                 j += 1
                 self.play(anim, Indicate(u[0], color=BLUE_E), run_time=1)
+            self.wait(0.3)
             v = u
+            dth = v.dth
             while v is not None:
                 if v.pattern is not None:
                     anims = []
-                   for k in range(i, j):
-                       anims.append(Indicate(text[k][1], color=RED_E))
-                   self.play(*anims)
+                    for k in range(dth-v.dth, dth):
+                        anims.append(Indicate(text[k][1], color=RED_E, scale_factor=2))
+                    self.play(*anims)
+                e = v.output_edge
+                run_time=1
+                if e is not None:
+                    self.play(ShowPassingFlash(e.copy().set_color(PURE_RED),
+                                run_time=run_time,
+                                time_width=run_time))
+                    self.play(Indicate(v.output_link[0], color=GREEN_E))
                 v = v.output_link
+                self.wait(0.3)
+
+class Pic(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        font = "DroidSansMono Nerd Font"
+        pl = Rectangle(height=1, width=3, color=BLACK)
+        pl.shift(UP)
+        tl = Text("w", color=BLACK, font=font, font_size=28)
+        tl.move_to(pl)
+        pr = Rectangle(height=0.5*2, width=0.5*2, color=BLACK)
+        pr.set_fill(color=YELLOW, opacity=1)
+        pr.next_to(pl, RIGHT, buff=0)
+        tr = Text("a", color=BLACK, font=font, font_size=28)
+        tr.move_to(pr)
+        self.add(pl, tl, pr, tr)
+
+        pl1 = Rectangle(height=0.5*2, width=1*2, color=BLACK)
+        tl1 = Text("x", color=BLACK, font=font, font_size=28)
+        pr1 = Rectangle(height=0.5*2, width=0.5*2, color=BLACK)
+        pr1.set_fill(color=YELLOW, opacity=1)
+        pr1.next_to(pr, DOWN, buff=0.5*2)
+        pl1.next_to(pr1, LEFT, buff=0)
+        tl1.move_to(pl1)
+        tr1 = Text("a", color=BLACK, font=font, font_size=28)
+        tr1.move_to(pr1)
+        self.add(pl1, tl1, pr1, tr1)
+
+class Pic2(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        font = "DroidSansMono Nerd Font"
+        pl = Rectangle(height=1, width=4, color=BLACK)
+        pl.shift(UP*2)
+        tl = Text("w", color=BLACK, font=font, font_size=28)
+        tl.move_to(pl)
+        pr = Rectangle(height=0.5*2, width=0.5*2, color=BLACK)
+        pr.set_fill(color=YELLOW, opacity=1)
+        pr.next_to(pl, RIGHT, buff=0)
+        tr = Text("a", color=BLACK, font=font, font_size=28)
+        tr.move_to(pr)
+        self.add(pl, tl, pr, tr)
+
+        pl0 = Rectangle(height=0.5*2, width=1*3, color=BLACK)
+        pl0.next_to(pl, DOWN, buff=1).shift(RIGHT*0.5)
+        tl0 = Text("x", color=BLACK, font=font, font_size=28)
+        tl0.move_to(pl0)
+
+        pl1 = Rectangle(height=0.5*2, width=1*2, color=BLACK)
+        tl1 = Text("y", color=BLACK, font=font, font_size=28)
+        pr1 = Rectangle(height=0.5*2, width=0.5*2, color=BLACK)
+        pr1.set_fill(color=YELLOW, opacity=1)
+        pr1.next_to(pr, DOWN, buff=3)
+        pl1.next_to(pr1, LEFT, buff=0)
+        tl1.move_to(pl1)
+        tr1 = Text("a", color=BLACK, font=font, font_size=28)
+        tr1.move_to(pr1)
+        self.add(pl1, tl1, pr1, tr1, pl0, tl0)
 
 class Test(Scene):
     def construct(self):

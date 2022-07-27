@@ -1,40 +1,28 @@
 from collections import defaultdict
-import tree
 import queue
 
-class TrieNode(tree.Node):
+class TrieNode:
     
-    def __init__(self, text=" ", color="grey", pattern=None):
-        tree.Node.__init__(self, text, color)
-        self.children = {}
+    def __init__(self, pattern=None):
+        self.children = defaultdict(TrieNode)
         self.pattern = None
         self.suffix_link = None
         self.output_link = None
 
-class Trie(object):
+class ACAutomata:
 
     def __init__(self, patterns):
         self.patterns = patterns
         self.root = TrieNode()
+        self.build()
+        self.bfs()
 
     def build(self):
         for pattern in self.patterns:
             u = self.root
-            for i, c in enumerate(pattern):
-                if c in u.children.keys():
-                    u = u.children[c]
-                else:
-                    if i == len(pattern) - 1:
-                        v = TrieNode(c, color="green")
-                    else:
-                        v = TrieNode(c)
-                    u.children[c] = v
-                    u.connect(v)
-                    u = v
+            for c in pattern:
+                u = u.children[c]
             u.pattern = pattern
-
-        tree.dfs(self.root, -1, 1)
-        self.bfs()
 
     def bfs(self):
         q = queue.Queue()
@@ -55,36 +43,39 @@ class Trie(object):
                         else:
                             x = x.suffix_link
 
-                v.connect(v.suffix_link, color="red") 
                 # Build output link.
                 if v.suffix_link.pattern is not None:
                     v.output_link = v.suffix_link
                 else:
                     v.output_link = v.suffix_link.output_link
-                if v.output_link is not None:
-                    v.connect(v.output_link, color="blue")
+
                 q.put(v)
 
     def match(self, text):
         u = self.root
+        answer = defaultdict(list)
+        j = 0
         for c in text:
             while not c in u.children.keys():
                 u = u.suffix_link
-                if u == self.root:
+                if u == self.root or u is None:
                     break
+            if u is None:
+                break
+
             if c in u.children.keys():
                 u = u.children[c]
+                j += 1
             v = u
             while v is not None:
                 if v.pattern is not None:
-                    print(v.pattern)
+                    answer[v.pattern].append(j - len(v.pattern))
                 v = v.output_link
+
+        return answer
 
 if __name__ == '__main__':
     patterns = ["ab", "about", "at", "ate", "be", "bed", "edge", "get"]
-    #patterns = ["i", "in", "tin", "sting"]
     text = "abedget"
-    trie = Trie(patterns)
-    trie.build()
-    trie.match(text)
-    tree.draw()
+    ac_automata = ACAutomata(patterns)
+    print(ac_automata.match(text))
