@@ -33,15 +33,12 @@ class SuffixArray:
                 c[a[i]] += 1
             sum = 0
             for i in range(self.N):
-                if c[i]:
-                    sum += c[i]
-
-
-
-
-
-
-
+                t = c[i]
+                c[i] = sum
+                sum += t
+            for i in idx:
+                r[c[a[i]]] = i
+                c[a[i]] += 1
 
 if __name__ == '__main__':
     text = "abcabcacab"
