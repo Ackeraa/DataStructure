@@ -6,8 +6,9 @@ from suffix_array import SuffixArray
 class Test(unittest.TestCase):
     def setUp(self):
         chars = ["a", "b", "c", "d", "e", "f", "g"]
-        n = 100
+        n = 40
         text = "".join([ random.choice(chars) for _ in range(n)])
+        print(text)
 
         self.brute = Brute(text)
         self.suffix_array = SuffixArray(text)
