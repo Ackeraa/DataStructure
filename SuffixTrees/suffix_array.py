@@ -7,21 +7,19 @@ class SuffixArray:
         self.sa = self.build(t, 27)
 
     '''
-        * split into three texts, connect last two into one, called R12.
-        * recursively:
-            * radix sort R12
-            * use R12, sort R0.
-            * combine R0 and R12.
+        * def get_sa12_recursivily(t):
+            * split t into two, SA0, SA12.
+            * radix sort SA12, and get its rank R12
+            * SA12 = get_sa12_recursivily(R12)
+            * use SA12 to get SA0.
+            * combine SA0 and SA12 to SA.
+            * return SA
     '''
     def build(self, t, N):
         '''
         1 2 3 0 0 0
         1 2 3 4 0 0 0
         1 2 3 4 5 0 0 0
-        0 1 2 3 4 5 6 7 8 9 0 0 0
-        0     3     6     9
-          1     4     7     0
-            2     5     8 
         '''
         t += [0, 0, 0]
         n = len(t)
@@ -34,9 +32,9 @@ class SuffixArray:
         r12 = [0 for _ in range(len(sa12))] + [0]
 
         # sort sa12
-        self.radix_pass(t[2:], sa12, N)
-        self.radix_pass(t[1:], sa12, N)
-        self.radix_pass(t[0:], sa12, N)
+        self.radix_sort(t[2:], sa12, N)
+        self.radix_sort(t[1:], sa12, N)
+        self.radix_sort(t[0:], sa12, N)
 
         # get rank r12
         num = 0
@@ -62,14 +60,13 @@ class SuffixArray:
                     sa12[i] = (sa12[i] - n1) * 3 + 2
 
         # sort sa0
-        sa0 = [i - 1 for i in sa12 if i % 3 == 1]
-        self.radix_pass(t, sa0, N)
-        # print("t, sa12, sa0", t, sa12, sa0)
+        sa0 = [i - 1 for i in sa12 if i % 3 == 1] # first round 
+        self.radix_sort(t, sa0, N) # second round 
 
         # merge sa0 and sa12
-        #print(len(r12), r12)
         sa = []
         i = j = 0
+        # delete 0s
         while t[sa0[i]] == 0:
             i += 1
         while t[sa12[j]] == 0:
@@ -78,7 +75,6 @@ class SuffixArray:
         while i < n0 and j < n12:
             a = sa0[i]
             b = sa12[j]
-        #    print(a, b, n1 + (a + 2) // 3, (b + 2) // 3)
             if (b % 3 == 0 and t[a] < t[b]) or \
                (b % 3 == 1 and (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3])) or \
                (b % 3 == 2 and (t[a], t[a + 1], r12[n1 + (a + 2) // 3]) < (t[b], t[b + 1], r12[(b + 2) // 3])):
@@ -98,7 +94,7 @@ class SuffixArray:
                         i += 1
         return sa
 
-    def radix_pass(self, t, a, N):
+    def radix_sort(self, t, a, N):
         queue_list = [list() for _ in range(N)]
         for i in a:
             queue_list[t[i]].append(i)
@@ -111,30 +107,4 @@ class SuffixArray:
 
 if __name__ == '__main__':
     text = "abcabcacab"
-    text = "abcabasdascacab"
-    text = "bcaeaeccef"
-    text = "gebaddfbafdcdebadebf"
-    text = "ggeddcgdbagggeaeacagafcbaebbgbceedfaacaa"
-    text = "gcdeffgfgf"
     suffix_array = SuffixArray(text)
-    
-    # bcaeaeccef000
-    # 0123456789000
-    # 0  3  6  9  
-    #  1  4  7  0
-    #   2  5  8  
-    # 012 345 678 9 10
-    # 123456000
-    # 1  4  0
-    #  2  5  0
-    #   3  6  0
-
-    # 12345000
-    # 1  4  0
-    #  2  5  0
-    #   3  0
-
-    # 1234000
-    # 1  4  0
-    #  2  0  
-    #   3   0
