@@ -5,7 +5,6 @@ class SuffixArray:
         # suppose char set is [a..z] -> [1..26]
         t = [ord(x) - ord('a') + 1 for x in self.t]
         self.sa = self.build(t, 27)
-        print(self.sa)
 
     '''
         * split into three texts, connect last two into one, called R12.
@@ -15,15 +14,24 @@ class SuffixArray:
             * combine R0 and R12.
     '''
     def build(self, t, N):
-        t.extend([0, 0, 0])
+        '''
+        1 2 3 0 0 0
+        1 2 3 4 0 0 0
+        1 2 3 4 5 0 0 0
+        0 1 2 3 4 5 6 7 8 9 0 0 0
+        0     3     6     9
+          1     4     7     0
+            2     5     8 
+        '''
+        t += [0, 0, 0]
         n = len(t)
         n0 = (n - 1) // 3
         n1 = (n - 1) // 3
         n2 = (n - 2) // 3
         n12 = n1 + n2
-        sa12 = [i * 3 + 1 for i in range(n1)] \
-             + [i * 3 + 2 for i in range(n2)]
-        r12 = [0 for _ in range(len(sa12))]
+        sa12 = [i * 3 + 1 for i in range(n1)] + \
+               [i * 3 + 2 for i in range(n2)]
+        r12 = [0 for _ in range(len(sa12))] + [0]
 
         # sort sa12
         self.radix_pass(t[2:], sa12, N)
@@ -56,17 +64,24 @@ class SuffixArray:
         # sort sa0
         sa0 = [i - 1 for i in sa12 if i % 3 == 1]
         self.radix_pass(t, sa0, N)
+        # print("t, sa12, sa0", t, sa12, sa0)
 
         # merge sa0 and sa12
+        #print(len(r12), r12)
         sa = []
-        i = 0 if t[sa0[0]] else 1 # need to be fixed 
-        j = 0 if t[sa12[0]] else 1
+        i = j = 0
+        while t[sa0[i]] == 0:
+            i += 1
+        while t[sa12[j]] == 0:
+            j += 1
+
         while i < n0 and j < n12:
             a = sa0[i]
             b = sa12[j]
+        #    print(a, b, n1 + (a + 2) // 3, (b + 2) // 3)
             if (b % 3 == 0 and t[a] < t[b]) or \
                (b % 3 == 1 and (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3])) or \
-               (b % 3 == 2 and n1 + a // 3 < n12 and (t[a], t[a + 1], r12[n1 + (a + 2) // 3]) < (t[b], t[b + 1], r12[(b + 2) // 3])):
+               (b % 3 == 2 and (t[a], t[a + 1], r12[n1 + (a + 2) // 3]) < (t[b], t[b + 1], r12[(b + 2) // 3])):
 
                 sa.append(a)
                 i += 1
@@ -99,6 +114,8 @@ if __name__ == '__main__':
     text = "abcabasdascacab"
     text = "bcaeaeccef"
     text = "gebaddfbafdcdebadebf"
+    text = "ggeddcgdbagggeaeacagafcbaebbgbceedfaacaa"
+    text = "gcdeffgfgf"
     suffix_array = SuffixArray(text)
     
     # bcaeaeccef000

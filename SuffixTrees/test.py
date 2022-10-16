@@ -5,16 +5,17 @@ from suffix_array import SuffixArray
 
 class Test(unittest.TestCase):
     def setUp(self):
-        chars = ["a", "b", "c", "d", "e", "f", "g"]
-        n = 40
-        text = "".join([ random.choice(chars) for _ in range(n)])
-        print(text)
-
-        self.brute = Brute(text)
-        self.suffix_array = SuffixArray(text)
+        self.chars = ["a", "b", "c", "d", "e", "f", "g"]
 
     def test_suffix_array_built(self):
-        self.assertEqual(self.brute.sa, self.suffix_array.sa)
+        for i in range(100):
+            n = 10000 + random.randint(0, 3)
+            text = "".join([ random.choice(self.chars) for _ in range(n)])
+            # print(text)
+
+            brute = Brute(text)
+            suffix_array = SuffixArray(text)
+            self.assertEqual(brute.sa, suffix_array.sa)
 
 if __name__ == "__main__":
     unittest.main()

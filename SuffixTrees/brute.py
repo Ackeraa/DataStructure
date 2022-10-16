@@ -12,6 +12,8 @@ if __name__ == '__main__':
     text = "abcabasdascacab"
     text = "bcaeaeccef"
     text = "gebaddfbafdcdebadebf"
+    text = "ggeddcgdbagggeaeacagafcbaebbgbceedfaacaa"
+    text = "gcdeffgfgf"
     brute = Brute(text)
 
     print(brute.sa)
