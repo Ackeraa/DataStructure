@@ -5,6 +5,18 @@ class SuffixArray:
         # suppose char set is [a..z] -> [1..26]
         t = [ord(x) - ord('a') + 1 for x in self.t]
         self.sa = self.build(t, 27)
+        self.height = self.kasai()
+
+    def radix_sort(self, t, a, N):
+        queue_list = [list() for _ in range(N)]
+        for i in a:
+            queue_list[t[i]].append(i)
+
+        num = 0
+        for ids in queue_list:
+            for i in ids:
+                a[num] = i
+                num += 1
 
     '''
         * def get_sa12_recursivily(t):
@@ -94,17 +106,31 @@ class SuffixArray:
                         i += 1
         return sa
 
-    def radix_sort(self, t, a, N):
-        queue_list = [list() for _ in range(N)]
-        for i in a:
-            queue_list[t[i]].append(i)
+    def kasai(self):
+        n = len(self.t)
+        height = [0 for _ in range(n)]
+        rank = [0 for _ in range(n)]
+        for i in range(n):
+            rank[self.sa[i]] = i
 
-        num = 0
-        for ids in queue_list:
-            for i in ids:
-                a[num] = i
-                num += 1
+        h = 0
+        for i in range(n):
+            if rank[i] == n - 1:
+                h = 0
+                continue
+
+            j = self.sa[rank[i] + 1]
+            while i + h < n and j + h < n and self.t[i + h] == self.t[j + h]:
+                h += 1
+            height[rank[i]] = h
+
+            if h > 0:
+                h -= 1
+
+        return height
 
 if __name__ == '__main__':
     text = "abcabcacab"
+    text = "fdcedgbcadbd"
     suffix_array = SuffixArray(text)
+    print(suffix_array.height)
