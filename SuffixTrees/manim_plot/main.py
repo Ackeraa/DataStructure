@@ -94,7 +94,9 @@ class BuildSuffixArray(Scene):
         #'''
 
     def sort(self):
-        pass
+        l = Line([4, -3, 0], [4, 1, 0], color=BLACK, stroke_width=2)
+        r = Line([3, -3, 0], [3, 1, 0], color=BLACK, stroke_width=2)
+        self.add(l, r)
         #''' divide by 3
 
         #'''
@@ -190,9 +192,5 @@ class BuildSuffixArray(Scene):
 
 
         self.wait()
-
-    def sort(self):
-        pass
-
 
 

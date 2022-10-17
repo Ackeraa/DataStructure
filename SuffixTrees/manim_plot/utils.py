@@ -7,7 +7,7 @@ class Array(VGroup):
         size = len(values)
         super().__init__()
         for i in range(size):
-            sq = Square(square_size, color=BLACK, stroke_width=2)
+            sq = Square(square_size, color=color, stroke_width=2)
             txt = Text(str(values[i]), color=color, font="DroidSansMono Nerd Font", font_size=24).scale(0.6)
             txt.move_to(sq.get_center())
             self.add(VGroup(sq, txt))
