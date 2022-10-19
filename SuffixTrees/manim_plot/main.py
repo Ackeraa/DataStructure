@@ -9,15 +9,24 @@ class BuildSuffixArray(Scene):
     def construct(self):
         self.camera.background_color = WHITE
         self.t = list("abcabcacab")
-        t = [ord(x) for x in self.t]
+        t = [ord(x) - ord('a') + 1 for x in self.t]
         # self.sa = self.build(t, 256)
-        self.split(self.t)
+        self.start(t)
+        self.split(t)
         self.sort()
         self.wait()
 
     def playa(self, anims):
         for anim in anims:
             self.play(anim)
+
+    def start(self, t):
+        mt_ = Array(self.t)
+        mt = Array(t)
+        self.add(mt_)
+        self.play(ReplacementTransform(mt_, mt))
+        self.play(mt.animate.shift(UP * 3, LEFT * 0.6 * 1.5))
+        self.remove(mt, mt_)
 
     def split(self, t):
         t += [0, 0, 0]
@@ -31,7 +40,7 @@ class BuildSuffixArray(Scene):
         r12 = [0 for _ in range(len(sa12))] + [0]
         sa0 = [i * 3 for i in range(n0)]
     
-        self.mt = Array(self.t).shift(UP * 3)
+        self.mt = Array(t).shift(UP * 3)
         self.msa0 = Array(t)
         self.add(self.mt[:-3])
 
@@ -94,9 +103,18 @@ class BuildSuffixArray(Scene):
         #'''
 
     def sort(self):
-        l = Line([4, -3, 0], [4, 1, 0], color=BLACK, stroke_width=2)
-        r = Line([3, -3, 0], [3, 1, 0], color=BLACK, stroke_width=2)
-        self.add(l, r)
+        buckets = VGroup()
+        n = 7
+        m = n // 2
+        for i in range(n):
+            buckets.add(Line([i - m, -2, 0], [i - m, 1, 0], color=BLACK, stroke_width=2))
+            if i < 6:
+                l = Line([i - m, -2, 0], [i - m + 1, -2, 0], color=BLACK, stroke_width=2)
+                t = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
+                buckets.add(l, t)
+
+        #self.play(Create(buckets))
+        self.add(buckets)
         #''' divide by 3
 
         #'''
@@ -192,5 +210,4 @@ class BuildSuffixArray(Scene):
 
 
         self.wait()
-
 
