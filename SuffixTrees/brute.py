@@ -25,8 +25,16 @@ class Brute:
 
         return height
 
+    def lcp(self, i, j):
+        ans = self.height[i]
+        for k in range(i, j):
+            ans = min(ans, self.height[k])
+
+        return ans
+
 if __name__ == '__main__':
     text = "abcabcacab"
     brute = Brute(text)
 
     print(brute.height)
+    print(brute.lcp(0, 2))

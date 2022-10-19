@@ -1,3 +1,7 @@
+import sys
+sys.path.insert(0, '../RMQ')
+from combine4_2 import FischerHeun
+
 class SuffixArray:
     def __init__(self, text):
         self.k = 3
@@ -6,6 +10,8 @@ class SuffixArray:
         t = [ord(x) - ord('a') + 1 for x in self.t]
         self.sa = self.build(t, 27)
         self.height = self.kasai()
+        self.fischer_heun = FischerHeun(self.height)
+        self.fischer_heun.preprocess()
 
     def radix_sort(self, t, a, N):
         queue_list = [list() for _ in range(N)]
@@ -119,8 +125,8 @@ class SuffixArray:
                 h = 0
                 continue
 
-            j = self.sa[rank[i] + 1]
-            while i + h < n and j + h < n and self.t[i + h] == self.t[j + h]:
+            k = self.sa[rank[i] + 1]
+            while i + h < n and k + h < n and self.t[i + h] == self.t[k + h]:
                 h += 1
             height[rank[i]] = h
 
@@ -129,8 +135,11 @@ class SuffixArray:
 
         return height
 
+    def lcp(self, i, j):
+        return self.height[i] if j == i else self.fischer_heun.rmq(i, j - 1)
+
 if __name__ == '__main__':
     text = "abcabcacab"
-    text = "fdcedgbcadbd"
     suffix_array = SuffixArray(text)
     print(suffix_array.height)
+    print(suffix_array.lcp(0, 2))
