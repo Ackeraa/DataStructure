@@ -8,7 +8,7 @@ class CartesianTree(object):
     def __init__(self, a):
         self.root = None
         self.build(a)
-        self.traverse(self.root)
+        # self.traverse(self.root)
 
     def build(self, a):
         stack = []
