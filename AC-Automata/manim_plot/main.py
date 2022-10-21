@@ -14,10 +14,10 @@ class Trie(Scene):
         self.edges = VGroup()
         self.build()
         self.place(self.root)
-        # self.add(self.edges)
+        #self.add(self.edges)
         #self.add(self.nodes)
-        #self.build_animate()
-        self.match_animate()
+        self.build_animate()
+        #self.match_animate()
         self.wait()
 
     def build(self):
@@ -70,8 +70,8 @@ class Trie(Scene):
         patterns.arrange(DOWN, buff=0.5)
         patterns.shift(RIGHT*5)
         self.patterns_vg = patterns
-        self.title = Text("构造", font_size=26, color=BLUE_E).shift(UP*3.5+RIGHT*5)
-        self.play(FadeIn(patterns, self.title))
+        #self.title = Text("构造", font_size=26, color=BLUE_E).shift(UP*3.5+RIGHT*5)
+        self.play(FadeIn(patterns))
         ar = Triangle(color=RED_E).set_fill(RED, opacity=1).rotate(-180*DEGREES).scale(.03)
         pos = UP*0.3+LEFT*(len(self.patterns[0])//2)*0.2
         if len(self.patterns[0]) % 2 == 0:
@@ -84,7 +84,7 @@ class Trie(Scene):
                 pos = UP*0.3+LEFT*(len(self.patterns[i])//2)*0.2
                 if len(self.patterns[i]) % 2 == 0:
                     pos += RIGHT*0.1
-                self.play(ar.animate.move_to(patterns[i]).shift(pos))
+                self.play(ar.animate.move_to(patterns[i]).shift(pos), runn_time=0.5)
             u = root
             u0 = self.root
             for j, c in enumerate(pattern):
@@ -104,17 +104,18 @@ class Trie(Scene):
                     self.play(
                             ReplacementTransform(u0.copy(), v),
                             Create(e),
+                        run_time=0.8
                             )
                 else:
-                    self.play(Indicate(u0.children[c][0], color=TEAL))
+                    self.play(Indicate(u0.children[c][0], color=TEAL), run_time=0.5)
 
                 if j < len(pattern) - 1:
-                    self.play(ar.animate.shift(RIGHT*0.2))
+                    self.play(ar.animate.shift(RIGHT*0.2), run_time=0.5)
 
                 u = u.children[c]
                 u0 = u0.children[c]
             u.pattern = pattern
-            self.play(u0[0].animate.set_fill(RED_E, opacity=1))
+            self.play(u0[0].animate.set_fill(RED_E, opacity=1), run_time=0.8)
         self.remove(ar)
 
     def match_animate(self):
