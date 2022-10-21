@@ -11,7 +11,7 @@ class BuildSuffixArray(Scene):
         self.t = list("abcabcacab")
         t = [ord(x) - ord('a') + 1 for x in self.t]
         # self.sa = self.build(t, 256)
-        self.start(t)
+        # self.start(t)
         self.split(t)
         self.sort()
         self.wait()
@@ -115,13 +115,50 @@ class BuildSuffixArray(Scene):
 
         #self.play(Create(buckets))
         self.add(buckets)
-        #''' divide by 3
 
-        #'''
+        nums = VGroup()
+        anims = []
+        for i in range(len(self.msa12) // 3):
+            num = VGroup()
+            for x in self.msa12[i * 3: i * 3 + 3]:
+                num.add(x[1].copy())
+            nums.add(num.arrange(RIGHT, buff=0.1))
+            anims.append(ReplacementTransform(self.msa12[i * 3: i * 3 + 3].copy(), num))
+        nums.arrange(RIGHT, buff=0.4).shift(DOWN * 2.5)
+        
+        ''' divide by 3
+        self.playa(anims)
+        '''
 
         #''' divide by 3 1
+        self.add(nums)
         #'''
-        
+
+        for j in range(1):
+            anims = []
+            for num in nums:
+                anims.append(num[j].animate.set(color=RED))
+            self.play(*anims)
+
+            queue_list = [[Line([i - m, -2, 0], [i - m + 1, -2, 0])] for i in range(n)]
+            for i in range(len(nums)):
+                x = ord(nums[i][j].text) - ord('0')
+                queue_list[x].append(nums[i])
+
+            for queue in queue_list:
+                for i in range(1, len(queue)):
+                    self.play(queue[i].animate.next_to(queue[i - 1], UP, buff=0.2))
+
+            '''
+            cnt = 0
+            for ids in queue_list:
+                for i in ids:
+                    b[cnt] = a[i]
+                    cnt += 1
+            for num in nums:
+                anims1_2.append(num[j].animate.set(color=BLACK))
+            '''
+    
     def build(self, t, N):
         t += [0, 0, 0]
         n = len(t)
@@ -206,8 +243,4 @@ class BuildSuffixArray(Scene):
             for i in ids:
                 a[num] = i
                 num += 1
-
-
-
-        self.wait()
 
