@@ -4,11 +4,9 @@ from combine4_2 import FischerHeun
 
 class SuffixArray:
     def __init__(self, text):
-        self.k = 3
         self.t = text
-        # suppose char set is [a..z] -> [1..26]
-        t = [ord(x) - ord('a') + 1 for x in self.t]
-        self.sa = self.build(t, 27)
+        t = [ord(x) for x in self.t]
+        self.sa = self.build(t, 256)
         self.height = self.kasai()
         self.fischer_heun = FischerHeun(self.height)
         self.fischer_heun.preprocess()
