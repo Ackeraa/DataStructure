@@ -34,6 +34,7 @@ class Brute:
 
 if __name__ == '__main__':
     text = "abcabcacab"
+    text = "aabaaabbabaaaba"
     brute = Brute(text)
 
     print(brute.height)
