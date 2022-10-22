@@ -171,37 +171,45 @@ class Fig1to2(Scene):
 class Fig3to4(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        # Fig 3
-        # self.fig3()
-        # Fig 4
-        self.fig4()
+
+        self.who = "fig3"
+
+        if self.who == "fig3":
+            self.fig3()
+        else:
+            self.fig4()
 
         self.root = TrieNode(size=self.node_size)
         self.nodes = VGroup(self.root)
         self.edges = VGroup()
         self.build()
         self.compress(self.root)
-        self.place(self.root)
+
+        if self.who == "fig3":
+            self.place3(self.root)
+        else:
+            self.place4(self.root)
         
         tree = VGroup(self.root, self.nodes, self.edges)
 
-        # Fig 4
-        tree.shift(LEFT)
+        if self.who == "fig4":
+            tree.shift(LEFT * 0.5)
 
         self.add(tree)
 
     def fig3(self):
+        self.split = False
         self.node_size = 0.45
         self.scale = 0.4
-        self.gap = 2
+        self.gap = 2.5
         self.texts = ["ant$", "ante$", "anteater$", "antelope$", "antique$"]
 
     def fig4(self):
-        self.node_size = 0.27
-        self.scale = 0.24
-        self.gap = 2
-        text = "nonsense$"
-        # text = "abcabcacab$"
+        self.split = True
+        self.node_size = 0.4
+        self.scale = 0.4
+        self.gap = 1.5
+        text = "abcabcacab$"
         self.texts = [ text[i:] for i in range(len(text))]
         vg = VGroup()
         for txt in self.texts:
@@ -209,7 +217,7 @@ class Fig3to4(Scene):
             txt = (len(text) - len(txt)) * "*"
             t0 = Text(txt, color=WHITE, font="DroidSansMono Nerd Font", font_size=22)
             vg.add(VGroup(t, t0).arrange(RIGHT, buff=0))
-        vg.arrange(DOWN, buff=0.5).shift(RIGHT * 6)
+        vg.arrange(DOWN, buff=0.3).shift(RIGHT * 5.5)
         self.add(vg)
 
     def compress(self, u):
@@ -222,7 +230,7 @@ class Fig3to4(Scene):
                 uu.children = {}
                 text += v[1].text
                 uu = v
-            u.set_text(text, scale=self.scale)
+            u.set_text(text, scale=self.scale, split=self.split)
             u.children = uu.children
 
         self.nodes.add(u)
@@ -234,7 +242,7 @@ class Fig3to4(Scene):
     def build(self):
         w = 12
         self.root.w = w
-        self.root.l = -w // 2 
+        self.root.l = -w / 2
         self.root.shift(UP*3)
         for text in self.texts:
             u = self.root
@@ -245,12 +253,12 @@ class Fig3to4(Scene):
                 u = u.children[c]
             u.text = text
 
-    def place(self, father):
+    def place3(self, father):
         n = max(1, len(father.children))
         l = father.l
         w = father.w
         h = father.get_center()[1]
-        gap = w / n / 2 
+        gap = w / n / 2
         p1 = father.get_center()
         for child in father.children.values():
             pos = [l + (child.idx * 2 + 1) * gap, h - self.gap, 0]
@@ -267,7 +275,43 @@ class Fig3to4(Scene):
             dp2 = dp2 / lp * child[0].radius
             e = Line(p1+dp1, p2+dp2, color=BLACK)
             self.edges.add(e)
-            self.place(child)
+            self.place3(child)
+
+    def place4(self, father, dep=0):
+        n = max(1, len(father.children))
+        l = father.l
+        w = father.w
+        h = father.get_center()[1]
+        gap = w / n / 1.8
+        p1 = father.get_center()
+        i = 0
+        for child in father.children.values():
+            pos = [l + (child.idx * 2 + 1) * gap, h - self.gap, 0]
+            child.l = pos[0] - gap
+            if i == 0 and dep == 3:
+                pos[0] -= gap
+            if i == 3 and dep == 0:
+                pos[0] -= gap 
+
+            child.w = 2 * gap
+            child.move_to(pos)
+            p2 = child.get_center()
+            #e = Line(father[0], child[0], color=BLACK)
+            dp1 = np.array(p2 - p1)
+            lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+            dp1 = dp1 / lp * child[0].radius
+            dp2 = np.array(p1 - p2)
+            lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+            dp2 = dp2 / lp * child[0].radius
+            e = Line(p1+dp1, p2+dp2, color=BLACK)
+            i += 1
+            self.edges.add(e)
+            self.place4(child, dep + 1)
+
+
+class Fig5(Scene):
+    def construct(self):
+        t = "abcabcacab"
 
 
 class BuildSuffixArray(Scene):
