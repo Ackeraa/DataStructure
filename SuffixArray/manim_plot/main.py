@@ -1,9 +1,274 @@
 from manim import *
 from utils import *
-import math
-import numpy as np
-import queue
-import random
+
+class Fig1to2(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        self.texts = ["ant", "ante", "anteater", "antelope", "antique"]
+        self.pattern = "ante"
+        self.root = TrieNode()
+        self.nodes = VGroup(self.root)
+        self.edges = VGroup()
+        self.build()
+        self.place(self.root)
+        #self.add(self.edges)
+        #self.add(self.nodes)
+
+        # Fig 1
+        self.build_animate()
+        # Fig 2
+        # self.match_animate()
+
+        self.wait()
+
+    def build(self):
+        w = 10
+        self.root.w = w
+        self.root.l = -w // 2 
+        self.root.shift(UP*3.3)
+        for text in self.texts:
+            u = self.root
+            for c in text:
+                if c not in u.children:
+                    v = TrieNode(c, len(u.children))
+                    u.children[c] = v 
+                    self.nodes.add(v)
+                u = u.children[c]
+            u.text = text
+            self.nodes[-1][0].set_fill(RED_E, opacity=1)
+
+    def place(self, father):
+        n = max(1, len(father.children))
+        l = father.l
+        w = father.w
+        h = father.get_center()[1]
+        gap = w / n / 2 
+        p1 = father.get_center()
+        for child in father.children.values():
+            pos = [l + (child.idx * 2 + 1) * gap, h - 0.8, 0]
+            child.l = pos[0] - gap
+            child.w = 2 * gap
+            child.move_to(pos)
+            p2 = child.get_center()
+            #e = Line(father[0], child[0], color=BLACK)
+            dp1 = np.array(p2 - p1)
+            lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+            dp1 = dp1 / lp * child[0].radius
+            dp2 = np.array(p1 - p2)
+            lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+            dp2 = dp2 / lp * child[0].radius
+            e = Line(p1+dp1, p2+dp2, color=BLACK)
+            self.edges.add(e)
+            self.place(child)
+
+    def build_animate(self):
+        self.nodes.shift(LEFT)
+        root = TrieNode()
+        texts = VGroup()
+        for text in self.texts:
+            text = Text(text, color=BLACK, font="DroidSansMono Nerd Font", font_size=22)
+            texts.add(text)
+        texts.arrange(DOWN, buff=0.5)
+        texts.shift(RIGHT*5)
+        self.texts_vg = texts
+        self.title = Text("构造", font_size=26, color=BLUE_E).shift(UP*3.5+RIGHT*5)
+        self.add(texts, self.title)
+        ar = Triangle(color=RED_E).set_fill(RED, opacity=1).rotate(-180*DEGREES).scale(.03)
+        pos = UP*0.3+LEFT*(len(self.texts[0])//2)*0.2
+        if len(self.texts[0]) % 2 == 0:
+            pos += RIGHT*0.1
+        ar.move_to(texts[0]).shift(pos)
+        self.play(FadeIn(ar), FadeIn(self.root))
+        for i, text in enumerate(self.texts):
+            if i != 0:
+                pos = UP*0.3+LEFT*(len(self.texts[i])//2)*0.2
+                if len(self.texts[i]) % 2 == 0:
+                    pos += RIGHT*0.1
+                self.play(ar.animate.move_to(texts[i]).shift(pos), runn_time=0.8)
+            u = root
+            u0 = self.root
+            for j, c in enumerate(text):
+                p1 = u0.get_center()
+                if c not in u.children:
+                    u.children[c] = TrieNode(c, len(u.children))
+                    v = u0.children[c]
+                    p2 = v.get_center()
+                    #e = Line(father[0], child[0], color=BLACK)
+                    dp1 = np.array(p2 - p1)
+                    lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+                    dp1 = dp1 / lp * v[0].radius
+                    dp2 = np.array(p1 - p2)
+                    lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+                    dp2 = dp2 / lp * v[0].radius
+                    e = Line(p1+dp1, p2+dp2, color=BLACK)
+                    self.play(
+                            ReplacementTransform(u0.copy(), v),
+                            Create(e),
+                        run_time=0.8
+                            )
+                else:
+                    self.play(Indicate(u0.children[c][0], color=TEAL), run_time=0.8)
+
+                if j < len(text) - 1:
+                    self.play(ar.animate.shift(RIGHT*0.2), run_time=0.8)
+
+                u = u.children[c]
+                u0 = u0.children[c]
+            u.text = text
+            self.play(u0[0].animate.set_fill(RED_E, opacity=1), run_time=0.8)
+        self.remove(ar)
+
+    def match_animate(self):
+        text = "ante"
+        text_vg = VGroup(Text(text, color=BLACK, font="DroidSansMono Nerd Font", font_size=22))
+        text_vg.shift(RIGHT*5+UP*2)
+
+        title = Text("前缀匹配", font_size=26, color=BLUE_E).shift(UP*3.5+RIGHT*5)
+        self.add(self.nodes, self.edges, text_vg, title)
+
+        ar = Triangle(color=RED_E).set_fill(RED, opacity=1).rotate(-180*DEGREES).scale(.03)
+        ar.move_to(text_vg).shift(UP*0.3+LEFT*(len(text)//2)*0.2)
+        if len(text) % 2 == 0:
+            ar.shift(RIGHT*0.1)
+        self.play(FadeIn(ar))
+
+        u = self.root
+        for j, c in enumerate(text):
+            u = u.children.get(c)
+            if u is None:
+                break
+            else:
+                self.play(Indicate(u[0], color=TEAL), run_time=0.8)
+            if j < len(text) - 1:
+                self.play(ar.animate.shift(RIGHT*0.2), run_time=0.8)
+        self.i = 0
+        def dfs(u, text):
+            self.play(Indicate(u[0], color=BLUE), run_time=0.8)
+            if u.text is not None:
+                t = Text(text, color=RED, font="DroidSansMono Nerd Font", font_size=22)
+                t.shift(RIGHT * 5, DOWN*self.i/2)
+                self.add(t)
+                self.i += 1
+            for c in u.children:
+                v = u.children[c]
+                dfs(v, text + v[1].text)
+
+        dfs(u, text)
+
+    def match(self, text):
+        m = len(text)
+        for i in range(m):
+            u = self.root
+            for j in range(i, m):
+                u = u.children.get(text[j])
+                if u is None:
+                    break
+                else:
+                    text = u.text
+                    if text is not None:
+                        print(text)
+
+class Fig3to4(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        # Fig 3
+        # self.fig3()
+        # Fig 4
+        self.fig4()
+
+        self.root = TrieNode(size=self.node_size)
+        self.nodes = VGroup(self.root)
+        self.edges = VGroup()
+        self.build()
+        self.compress(self.root)
+        self.place(self.root)
+        
+        tree = VGroup(self.root, self.nodes, self.edges)
+
+        # Fig 4
+        tree.shift(LEFT)
+
+        self.add(tree)
+
+    def fig3(self):
+        self.node_size = 0.45
+        self.scale = 0.4
+        self.gap = 2
+        self.texts = ["ant$", "ante$", "anteater$", "antelope$", "antique$"]
+
+    def fig4(self):
+        self.node_size = 0.27
+        self.scale = 0.24
+        self.gap = 2
+        text = "nonsense$"
+        # text = "abcabcacab$"
+        self.texts = [ text[i:] for i in range(len(text))]
+        vg = VGroup()
+        for txt in self.texts:
+            t = Text(txt, color=BLACK, font="DroidSansMono Nerd Font", font_size=22)
+            txt = (len(text) - len(txt)) * "*"
+            t0 = Text(txt, color=WHITE, font="DroidSansMono Nerd Font", font_size=22)
+            vg.add(VGroup(t, t0).arrange(RIGHT, buff=0))
+        vg.arrange(DOWN, buff=0.5).shift(RIGHT * 6)
+        self.add(vg)
+
+    def compress(self, u):
+        if len(u.children) == 1:
+            text = u[1].text
+            uu = u
+            while len(uu.children) == 1:
+                c = next(iter(uu.children))
+                v = uu.children[c]
+                uu.children = {}
+                text += v[1].text
+                uu = v
+            u.set_text(text, scale=self.scale)
+            u.children = uu.children
+
+        self.nodes.add(u)
+
+        for c in u.children:
+            v = u.children[c]
+            self.compress(v)
+
+    def build(self):
+        w = 12
+        self.root.w = w
+        self.root.l = -w // 2 
+        self.root.shift(UP*3)
+        for text in self.texts:
+            u = self.root
+            for c in text:
+                if c not in u.children:
+                    v = TrieNode(c, len(u.children), size=self.node_size)
+                    u.children[c] = v 
+                u = u.children[c]
+            u.text = text
+
+    def place(self, father):
+        n = max(1, len(father.children))
+        l = father.l
+        w = father.w
+        h = father.get_center()[1]
+        gap = w / n / 2 
+        p1 = father.get_center()
+        for child in father.children.values():
+            pos = [l + (child.idx * 2 + 1) * gap, h - self.gap, 0]
+            child.l = pos[0] - gap
+            child.w = 2 * gap
+            child.move_to(pos)
+            p2 = child.get_center()
+            #e = Line(father[0], child[0], color=BLACK)
+            dp1 = np.array(p2 - p1)
+            lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+            dp1 = dp1 / lp * child[0].radius
+            dp2 = np.array(p1 - p2)
+            lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+            dp2 = dp2 / lp * child[0].radius
+            e = Line(p1+dp1, p2+dp2, color=BLACK)
+            self.edges.add(e)
+            self.place(child)
+
 
 class BuildSuffixArray(Scene):
     def construct(self):
@@ -210,4 +475,10 @@ class BuildSuffixArray(Scene):
 
 
         self.wait()
+
+class Test(Scene):
+    def construct(self):
+        t = Text("a")
+        t.set(text="b")
+        self.add(t)
 
