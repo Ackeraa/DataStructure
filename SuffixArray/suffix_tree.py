@@ -5,7 +5,7 @@ from suffix_array import SuffixArray
 
 class SuffixTreeNode:
     def __init__(self, l=0, r=0):
-        self.children = {} # need to be fixed
+        self.children = {} # could use hash table to get linear time.
         self.l = l
         self.r = r
 
@@ -17,11 +17,11 @@ class SuffixTree:
         self.height = suffix_array.height
 
         cartesian_tree = CartesianTree(self.height)
-        #self.traverse(self.cartesian_tree.root)
         
         self.cnt = 0
         self.root = SuffixTreeNode()
         self.build(cartesian_tree.root, self.root, 0)
+        self.sa1 = []
         self.traverse(self.root)
 
     def build(self, u, node, cnt):
@@ -33,7 +33,6 @@ class SuffixTree:
                 l = self.sa[self.cnt]
                 r = len(self.t)
                 c = self.t[l + node.r - node.l]
-                #print(node.l, node.r, l, r, c)
                 node.children[c] = SuffixTreeNode(l, r)
                 self.cnt += 1
             elif self.height[u.index] == self.height[v.index]: # fusion
@@ -42,7 +41,6 @@ class SuffixTree:
                 l = self.sa[v.index]
                 r = l + self.height[v.index]
                 c = self.t[l + node.r - node.l]
-                #print("######", l, r, c)
                 node.children[c] = SuffixTreeNode(l, r)
                 self.build(v, node.children[c], cnt)
 
@@ -50,7 +48,7 @@ class SuffixTree:
         for c in u.children:
             v = u.children[c]
             if v.children == {}:
-                print(self.t[v.l:v.r])
+                self.sa1.append(v.l)
             self.traverse(v)
 
 if __name__ == '__main__':
