@@ -509,16 +509,4 @@ class BuildSuffixArray(Scene):
                 a[num] = i
                 num += 1
 
-<<<<<<< HEAD
-
-
         self.wait()
-
-class Test(Scene):
-    def construct(self):
-        t = Text("a")
-        t.set(text="b")
-        self.add(t)
-
-=======
->>>>>>> 5327dc6c2a0f64d20d5255b0d09208343278c51a
