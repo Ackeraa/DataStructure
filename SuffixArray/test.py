@@ -2,6 +2,7 @@ import unittest
 import random
 from brute import Brute
 from suffix_array import SuffixArray
+from suffix_tree import SuffixTree
 
 class Test(unittest.TestCase):
     def setUp(self):
@@ -40,6 +41,12 @@ class Test(unittest.TestCase):
                     i, j = j, i
                 self.assertEqual(brute.lcp(i, j), suffix_array.lcp(i, j))
 
+    def test_suffix_tree(self):
+        for _ in range(100):
+            n = 1000 + random.randint(0, 3)
+            text = "".join([ random.choice(self.chars) for _ in range(n)])
+            suffix_tree = SuffixTree(text)
+            self.assertEqual(suffix_tree.sa, suffix_tree.sa1)
 
 if __name__ == "__main__":
     unittest.main()

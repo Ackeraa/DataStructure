@@ -1,64 +1,56 @@
 import sys
 sys.path.insert(0, '../RMQ')
 from cartesian_stack import CartesianTree
-from import SuffixArray
-from collections import defaultdict
+from suffix_array import SuffixArray
 
 class SuffixTreeNode:
     def __init__(self, l=0, r=0):
-        self.children = defaultdict(SuffixTreeNode)
+        self.children = {} # could use hash table to get linear time.
         self.l = l
         self.r = r
 
 class SuffixTree:
     def __init__(self, t):
-        self.root = None
-        self.t = t
-        suffix_array = SuffixArray(t)
+        self.t = t + "$"
+        suffix_array = SuffixArray(self.t)
         self.sa = suffix_array.sa
         self.height = suffix_array.height
 
         cartesian_tree = CartesianTree(self.height)
-        #self.traverse(self.cartesian_tree.root)
+        
         self.cnt = 0
-        self.build(cartesian_tree.root, self.root)
+        self.root = SuffixTreeNode()
+        self.build(cartesian_tree.root, self.root, 0)
+        self.sa1 = []
+        self.traverse(self.root)
 
+    def build(self, u, node, cnt):
+        for v in (u.lchild, u.rchild):
+            # [l, r)
+            if v is None:
+                if self.cnt >= len(self.sa):
+                    break
+                l = self.sa[self.cnt]
+                r = len(self.t)
+                c = self.t[l + node.r - node.l]
+                node.children[c] = SuffixTreeNode(l, r)
+                self.cnt += 1
+            elif self.height[u.index] == self.height[v.index]: # fusion
+                self.build(v, node, cnt)
+            else:
+                l = self.sa[v.index]
+                r = l + self.height[v.index]
+                c = self.t[l + node.r - node.l]
+                node.children[c] = SuffixTreeNode(l, r)
+                self.build(v, node.children[c], cnt)
 
-    def build(self, u, node):
-        if u.lchild is None:
-            l = self.sa[self.cnt]
-            r = len(self.t)
-            c = self.t[l]
-            node[c] = SuffixTreeNode(l, r)
-            self.cnt += 1
-        else:
-            l = self.sa[u.lchild.index]
-            r = l + self.height[u.lchild.index]
-            c = self.t[l]
-            node[c] = SuffixTreeNode(l, r)
-            self.build(u.lchild, node[c])
-
-        if u.rchild is None:
-            l = self.sa[self.cnt]
-            r = len(self.t)
-            c = self.t[l]
-            node[c] = SuffixTreeNode(l, r)
-            self.cnt += 1
-        else:
-            l = self.sa[u.rchild.index]
-            r = l + self.height[u.rchild.index]
-            c = self.t[l]
-            node[c] = SuffixTreeNode(l, r)
-            self.build(u.rchild, node[c])
-
-    def traverse(self, node):
-        print(node.index)
-        if node.lchild is not None:
-            self.traverse(node.lchild)
-        if node.rchild is not None:
-            self.traverse(node.rchild)
+    def traverse(self, u):
+        for c in u.children:
+            v = u.children[c]
+            if v.children == {}:
+                self.sa1.append(v.l)
+            self.traverse(v)
 
 if __name__ == '__main__':
     text = "abcabcacab"
     suffix_tree = SuffixTree(text)
-
