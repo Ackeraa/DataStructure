@@ -308,11 +308,53 @@ class Fig3to4(Scene):
             self.edges.add(e)
             self.place4(child, dep + 1)
 
-
 class Fig5(Scene):
     def construct(self):
-        t = "abcabcacab"
+        self.camera.background_color = WHITE
+        text = "abcabcacab$"
+        #text = Text(t, color=BLACK, font="DroidSansMono Nerd Font", font_size=30)
+        t0 = Array([t for t in text])
+        t0.shift(UP * 3.3)
+        self.add(t0)    
 
+        title1 = Text("所有后缀", color=BLUE_E, font="DroidSansMono Nerd Font", font_size=24)
+        title1.shift(UP * 2.3 + LEFT * 4)
+        self.add(title1)
+    
+        t1 = VGroup()
+        for i in range(len(text)):
+            a = Array([t for t in text[i:]], square_size=0.5)
+            t1.add(a)
+        t1.arrange(DOWN, buff=0).shift(LEFT * 3.5 + DOWN)
+        for a in t1:
+            a.shift((len(text) - len(a)) / 4 * LEFT)
+        self.add(t1)
+
+        for i in range(len(text)):
+            id = Text(str(i), color=BLACK, font="DroidSansMono Nerd Font", font_size=24)
+            id.next_to(t1[i][0], LEFT, buff=0.2)
+            self.add(id)
+
+        title2 = Text("后缀数组", color=BLUE_E, font="DroidSansMono Nerd Font", font_size=24)
+        title2.shift(UP * 2.3 + RIGHT * 4)
+        self.add(title2)
+
+        texts = [text[i:] for i in range(len(text))]
+        ids = sorted(range(len(texts)), key=texts.__getitem__)
+        texts.sort()
+        t2 = VGroup()
+        for t in texts:
+            a = Array(t, square_size=0.5)
+            t2.add(a)
+        t2.arrange(DOWN, buff=0).shift(RIGHT * 4 + DOWN)
+        for a in t2:
+            a.shift((len(text) - len(a)) / 4 * LEFT)
+        self.add(t2)
+
+        for i in range(len(text)):
+            id = Text(str(ids[i]), color=BLACK, font="DroidSansMono Nerd Font", font_size=24)
+            id.next_to(t2[i][0], LEFT, buff=0.2)
+            self.add(id)
 
 class BuildSuffixArray(Scene):
     def construct(self):
