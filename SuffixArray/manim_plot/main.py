@@ -491,7 +491,7 @@ class Fig7to8(Scene):
 
         for i in range(len(t)):
             if i == 0:
-                self.play(t[i].animate.shift(DOWN * 6 + LEFT * 3.33).scale(0.8))
+                self.play(t[i].animate.shift(DOWN * 5.5 + LEFT * 3.33).scale(0.8))
             else:
                 self.play(t[i].animate.next_to(t[i - 1], buff=0.2).scale(0.8))
 
@@ -515,8 +515,8 @@ class Fig7to8(Scene):
             buckets.add(Line([i - m, -1, 0], [i - m, 1, 0], color=BLACK, stroke_width=2))
             if i < 6:
                 l = Line([i - m, -1, 0], [i - m + 1, -1, 0], color=BLACK, stroke_width=2)
-                t = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
-                buckets.add(l, t)
+                x = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
+                buckets.add(l, x)
 
         buckets.shift(DOWN * 0.3)
         anims.append(FadeIn(buckets))
@@ -524,13 +524,13 @@ class Fig7to8(Scene):
 
         nums0 = nums.copy()
         ords = list(range(len(nums0)))
-        for j in range(2, 1, -1):
+        for j in range(2, -1, -1):
             anims = []
             for num in nums:
                 anims.append(num[j].animate.set(color=RED))
-            #self.play(*anims)
+            self.play(*anims)
 
-            queue_list = [[Line([i - m, -2.3, 0], [i - m + 1, -2.3, 0])] for i in range(n)]
+            queue_list = [[Line([i - m, -1.4, 0], [i - m + 1, -1.4, 0])] for i in range(n)]
             for i in range(len(nums)):
                 x = ord(nums[i][j].text) - ord('0')
                 queue_list[x].append(i)
@@ -541,25 +541,24 @@ class Fig7to8(Scene):
                         pre = queue[i - 1]
                     else:
                         pre = nums[queue[i - 1]]
-                    #self.play(nums[queue[i]].animate.next_to(pre, UP, buff=0.2))
+                    self.play(nums[queue[i]].animate.next_to(pre, UP, buff=0.2))
 
             cnt = 0
             nums1 = nums.copy()
+            ordso = ords.copy()
             for queue in queue_list:
-                for i in reversed(queue[1:]):
+                for i in queue[1:]:
                     nums1[cnt] = nums[i]
-                    ords[cnt] = i
+                    ords[cnt] = ordso[i]
                     cnt += 1
             nums = nums1
 
-            print(ords)
             for i in range(len(nums)):
-                pass
-                #self.play(nums[i].animate.move_to(nums0[i]))
+                self.play(nums[i].animate.move_to(nums0[i]))
             anims = []
             for num in nums:
                 anims.append(num[j].animate.set(color=BLACK))
-            #self.play(*anims)
+            self.play(*anims)
         
         rk = [0 for _ in range(len(nums))]
         cnt = 0
@@ -569,13 +568,63 @@ class Fig7to8(Scene):
                 cnt += 1
             rk[i] = cnt
 
-        print(rk)
         rkt = VGroup()
         for i in range(len(nums)):
             txt = Text(str(rk[i]), color=RED, font="DroidSansMono Nerd Font", font_size=16)
             txt.next_to(nums0[i], DOWN, buff=0.2)
             rkt.add(txt)
-        self.add(rkt)
+        for i in range(len(nums)):
+            self.play(FadeIn(rkt[i], run_time=0.7))
+
+        rkt1 = rkt.copy()
+        for i in range(len(nums)):
+            rkt1[i].next_to(t[ords[i]], UP, buff=0.2)
+
+        for i in range(len(nums)):
+            self.play(ReplacementTransform(VGroup(nums[i], rkt[i]), rkt1[i]))
+
+        self.play(FadeOut(buckets))
+
+        r12_tex = MathTex("R_{12}", font_size=24, color=BLACK)
+        r12_box = Square(0.8, color=WHITE)
+        r12_tex.move_to(r12_box.get_center())
+        r12_title = VGroup(r12_tex, r12_box).scale(0.8)
+        r12_title.next_to(self.titles_vg[-1], DOWN, buff=0.3)
+
+        a = [0 for _ in range(len(nums))]
+        for i in range(len(nums)):
+            a[ords[i]] = rk[i]
+        r12_content = Array(a, square_size=0.8).scale(0.8)
+        r12_content.next_to(r12_title, RIGHT, buff=0.1)
+        r12_vg = VGroup(r12_title, r12_content)
+
+        for i in range(self.n1):
+            r12_content[i][0].set_fill(color=TEAL, opacity=1)
+        for i in range(self.n2):
+            r12_content[self.n1+i][0].set_fill(color=BLUE, opacity=1)
+
+        self.play(ReplacementTransform(rkt1.copy(), r12_vg))
+
+        sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
+        sa12_box = Square(0.8, color=WHITE)
+        sa12_tex.move_to(sa12_box.get_center())
+        sa12_title = VGroup(sa12_tex, sa12_box).scale(0.8)
+        sa12_title.next_to(r12_title, DOWN, buff=0.3)
+
+        a = [0 for _ in range(len(nums))]
+        for i in range(len(nums)):
+            a[i] = self.t12[ords[i]]
+        sa12_content = Array(a, square_size=0.8).scale(0.8)
+        sa12_content.next_to(sa12_title, RIGHT, buff=0.1)
+        sa12_vg = VGroup(sa12_title, sa12_content)
+
+        for i in range(len(nums)):
+            if a[i] % 3 == 1:
+                sa12_content[i][0].set_fill(color=TEAL, opacity=1)
+            else:
+                sa12_content[i][0].set_fill(color=BLUE, opacity=1)
+
+        self.play(FadeIn(sa12_vg))
 
         self.wait()
 
