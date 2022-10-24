@@ -25,7 +25,7 @@ class SuffixArray:
     '''
         * def get_sa12_recursivily(t):
             * split t into two, SA0, SA12.
-            * radix sort SA12, and get its rank R12
+            * radix sort SA12, and get rank R12
             * SA12 = get_sa12_recursivily(R12)
             * use SA12 to get SA0.
             * combine SA0 and SA12 to SA.

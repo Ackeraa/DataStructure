@@ -399,30 +399,43 @@ class Fig6(Scene):
 
         r12 = [0 for _ in range(n12)]
         for i in range(n12):
-            r12[sa12[i]] = i
+            r12[sa12[i]] = i + 1
 
         seq = [t[i:] for i in range(n - 3)]
         sa = sorted(range(len(seq)), key=seq.__getitem__)
         r = [0 for _ in range(n - 3)]
         for i in range(n - 3):
-            r[sa[i]] = i
+            r[sa[i]] = i + 1
 
         contents = [t, t0, t1, t2, t12, sa0, sa12, r12, sa, r] 
+
+        tmp = sa12.copy()
+        for i in range(n12):
+            sa12[i] = t12[tmp[i]]
 
         for i in range(len(contents)):
             ar = Array(contents[i], square_size=0.5)
             ar.next_to(titles_vg[i + 1], RIGHT, buff=0.1)
             self.add(ar)
 
-class Fig7to8(Scene):
+class Fig7to9(Scene):
     def construct(self):
         self.camera.background_color = WHITE
         # Fig 7
-        self.add_t_t12()
-        # Fig 8
-        self.sort()
+        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        # self.add_t_t12(t)
 
-    def add_t_t12(self):
+        # Fig 8
+        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        # self.add_t_t12(t)
+        # self.sort(3.33, 7)
+
+        # Fig 9
+        t = [3, 3, 4, 1, 4, 5, 2]
+        self.add_t_t12(t)
+        self.sort(1.3, 7)
+
+    def add_t_t12(self, t):
         square_size = 0.8
         titles = ["id", "T", "T_{12}"]
         titles_vg = VGroup()
@@ -435,7 +448,7 @@ class Fig7to8(Scene):
         titles_vg[2].shift(DOWN)
         self.add(titles_vg)
 
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
+        t += [0, 0, 0]
         n = len(t)
         n0 = (n - 1) // 3
         n1 = (n - 1) // 3
@@ -479,7 +492,7 @@ class Fig7to8(Scene):
         self.titles_vg = titles_vg
         self.ids, self.tt, self.tt12 = ids, tt, tt12
 
-    def sort(self):
+    def sort(self, l_offset, n):
         vg = VGroup(self.titles_vg, self.ids, self.tt, self.tt12)
         vg.shift(UP * 1.5).scale(0.8)
         self.tt12.shift(UP * 0.5)
@@ -491,7 +504,7 @@ class Fig7to8(Scene):
 
         for i in range(len(t)):
             if i == 0:
-                self.play(t[i].animate.shift(DOWN * 5.5 + LEFT * 3.33).scale(0.8))
+                self.play(t[i].animate.shift(DOWN * 5.8 + LEFT * l_offset).scale(0.8))
             else:
                 self.play(t[i].animate.next_to(t[i - 1], buff=0.2).scale(0.8))
 
@@ -509,11 +522,10 @@ class Fig7to8(Scene):
             anims.append(ReplacementTransform(t[i].copy(), nums[i])) 
 
         buckets = VGroup()
-        n = 7
         m = n // 2
         for i in range(n):
             buckets.add(Line([i - m, -1, 0], [i - m, 1, 0], color=BLACK, stroke_width=2))
-            if i < 6:
+            if i < n - 1:
                 l = Line([i - m, -1, 0], [i - m + 1, -1, 0], color=BLACK, stroke_width=2)
                 x = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
                 buckets.add(l, x)
@@ -530,9 +542,9 @@ class Fig7to8(Scene):
                 anims.append(num[j].animate.set(color=RED))
             self.play(*anims)
 
-            queue_list = [[Line([i - m, -1.4, 0], [i - m + 1, -1.4, 0])] for i in range(n)]
+            queue_list = [[Line([i - m, -1.4, 0], [i - m + 1, -1.4, 0])] for i in range(100)]
             for i in range(len(nums)):
-                x = ord(nums[i][j].text) - ord('0')
+                x = int(nums[i][j].text)
                 queue_list[x].append(i)
 
             for queue in queue_list:
@@ -560,8 +572,8 @@ class Fig7to8(Scene):
                 anims.append(num[j].animate.set(color=BLACK))
             self.play(*anims)
         
-        rk = [0 for _ in range(len(nums))]
-        cnt = 0
+        rk = [1 for _ in range(len(nums))]
+        cnt = 1
         for i in range(1, len(nums)):
             if (nums[i][0].text, nums[i][1].text, nums[i][2].text) !=\
                (nums[i - 1][0].text, nums[i - 1][1].text, nums[i - 1][2].text):
@@ -628,10 +640,88 @@ class Fig7to8(Scene):
 
         self.wait()
 
-class Fig9(Scene):
+class Fig10(Scene):
     def construct(self):
         self.camera.background_color = WHITE
+        t = [3, 3, 4, 1, 4, 5, 2]
+        self.add_t_t12(t)
 
+    def add_t_t12(self, t):
+        square_size = 0.8
+        titles = ["id", "T", "T_0", "T_{12}", "R_{12}", "SA_{12}"]
+        titles_vg = VGroup()
+        for title in titles:
+            title_tex = MathTex(title, font_size=24, color=BLACK)
+            title_box = Square(square_size, color=WHITE)
+            title_tex.move_to(title_box.get_center())
+            titles_vg.add(VGroup(title_tex, title_box))
+        titles_vg.arrange(DOWN, buff=0.5).shift(LEFT * 5.5 + UP)
+        titles_vg[0].shift(DOWN*0.5)
+        titles_vg.shift(DOWN*0.5)
+        self.add(titles_vg)
+
+        t += [0, 0, 0]
+        n = len(t)
+        n0 = (n - 1) // 3
+        n1 = (n - 1) // 3
+        n2 = (n - 2) // 3
+        n12 = n1 + n2
+
+        tt = Array(t, square_size=square_size)
+        for i in range(len(t)):
+            if i < 3 * n0 and i % 3 == 0:
+                tt[i][0].set_fill(PURPLE, opacity=1)
+            elif i < 3 * n1 and i % 3 == 1:
+                tt[i][0].set_fill(TEAL, opacity=1)
+            elif i < 3 * n2:
+                tt[i][0].set_fill(BLUE, opacity=1)
+
+        ids = VGroup()
+        for i in range(n):
+            tex = MathTex(str(i), font_size=22, color=BLACK)
+            box = Square(square_size, color=WHITE)
+            tex.move_to(box.get_center())
+            ids.add(VGroup(tex, box))
+        ids.arrange(RIGHT, buff=0).next_to(titles_vg[0], RIGHT, buff=0.1)
+        self.add(ids)
+
+        t0 = [i * 3 for i in range(n0)]
+        tt0 = Array(t0, square_size=square_size)
+        for i in range(n0):
+            tt0[i][0].set_fill(PURPLE, opacity=1)
+
+
+        t1 = [i * 3 + 1 for i in range(n1)]
+        t2 = [i * 3 + 2 for i in range(n2)]
+        t12 = t1 + t2
+        tt12 = Array(t12, square_size=square_size)
+        for i in range(n1):
+            tt12[i][0].set_fill(TEAL, opacity=1)
+        for i in range(n2):
+            tt12[n1 + i][0].set_fill(BLUE, opacity=1)
+
+        seq12 = [t[i:] for i in t12]
+        sa12 = sorted(range(len(seq12)), key=seq12.__getitem__)
+        r12 = [0 for _ in range(n12)]
+        for i in range(n12):
+            r12[sa12[i]] = i + 1
+        rr12 = Array(r12, square_size=square_size)
+        for i in range(n1):
+            rr12[i][0].set_fill(TEAL, opacity=1)
+        for i in range(n2):
+            rr12[n1+i][0].set_fill(BLUE, opacity=1)
+
+        saa12 = Array([t12[i] for i in sa12], square_size=square_size)
+        for i in range(n12):
+            if t[sa12[i]] % 3 == 1:
+                saa12[i][0].set_fill(TEAL, opacity=1)
+            else:
+                saa12[i][0].set_fill(BLUE, opacity=1)
+
+        contents = [tt, tt0, tt12, rr12, saa12] 
+        for i in range(len(contents)):
+            contents[i].next_to(titles_vg[i + 1], RIGHT, buff=0.1)
+            self.add(contents[i])
 
 class BuildSuffixArray(Scene):
     def construct(self):
