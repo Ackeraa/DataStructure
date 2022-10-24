@@ -427,13 +427,13 @@ class Fig7to9(Scene):
 
         # Fig 8
         t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
-        # self.add_t_t12(t)
-        # self.sort(3.33, 7)
+        self.add_t_t12(t)
+        self.sort(3.33, 7)
 
         # Fig 9
         t = [3, 3, 4, 1, 4, 5, 2]
-        self.add_t_t12(t)
-        self.sort(1.3, 7)
+        #self.add_t_t12(t)
+        #self.sort(1.3, 7)
 
     def add_t_t12(self, t):
         square_size = 0.8
@@ -445,6 +445,7 @@ class Fig7to9(Scene):
             title_tex.move_to(title_box.get_center())
             titles_vg.add(VGroup(title_tex, title_box))
         titles_vg.arrange(DOWN, buff=0.1).shift(LEFT * 5.5 + UP)
+        titles_vg[0].shift(DOWN * 0.1)
         titles_vg[2].shift(DOWN)
         self.add(titles_vg)
 
@@ -455,23 +456,16 @@ class Fig7to9(Scene):
         n2 = (n - 2) // 3
         n12 = n1 + n2
 
-        tt = Array(t, square_size=square_size)
+        ids = Array([i for i in range(n)], square_size=square_size)
         for i in range(len(t)):
             if i < 3 * n0 and i % 3 == 0:
-                tt[i][0].set_fill(PURPLE, opacity=1)
+                ids[i][0].set_fill(PURPLE, opacity=1)
             elif i < 3 * n1 and i % 3 == 1:
-                tt[i][0].set_fill(TEAL, opacity=1)
+                ids[i][0].set_fill(TEAL, opacity=1)
             elif i < 3 * n2:
-                tt[i][0].set_fill(BLUE, opacity=1)
+                ids[i][0].set_fill(BLUE, opacity=1)
 
-        ids = VGroup()
-        for i in range(n):
-            tex = MathTex(str(i), font_size=22, color=BLACK)
-            box = Square(square_size, color=WHITE)
-            tex.move_to(box.get_center())
-            ids.add(VGroup(tex, box))
-        ids.arrange(RIGHT, buff=0).next_to(titles_vg[0], RIGHT, buff=0.1)
-        self.add(ids)
+        tt = Array(t, square_size=square_size, color=DARK_BROWN)
 
         t1 = [i * 3 + 1 for i in range(n1)]
         t2 = [i * 3 + 2 for i in range(n2)]
@@ -482,9 +476,9 @@ class Fig7to9(Scene):
         for i in range(n2):
             tt12[n1 + i][0].set_fill(BLUE, opacity=1)
 
-        contents = [tt, tt12] 
+        contents = [ids, tt, tt12] 
         for i in range(len(contents)):
-            contents[i].next_to(titles_vg[i + 1], RIGHT, buff=0.1)
+            contents[i].next_to(titles_vg[i], RIGHT, buff=0.1)
             self.add(contents[i])
 
         self.n, self.n0, self.n1, self.n2, self.n12 = n, n0, n1, n2, n12
@@ -569,7 +563,7 @@ class Fig7to9(Scene):
                 self.play(nums[i].animate.move_to(nums0[i]))
             anims = []
             for num in nums:
-                anims.append(num[j].animate.set(color=BLACK))
+                anims.append(num[j].animate.set(color=DARK_BROWN))
             self.play(*anims)
         
         rk = [1 for _ in range(len(nums))]
@@ -597,11 +591,24 @@ class Fig7to9(Scene):
 
         self.play(FadeOut(buckets))
 
+        sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
+        sa12_box = Square(0.8, color=WHITE)
+        sa12_tex.move_to(sa12_box.get_center())
+        sa12_title = VGroup(sa12_tex, sa12_box).scale(0.8)
+        sa12_title.next_to(self.titles_vg[-1], DOWN, buff=0.3)
+
+        a = [0 for _ in range(len(nums))]
+        for i in range(len(nums)):
+            a[i] = self.t12[ords[i]]
+        sa12_content = Array(a, square_size=0.8).scale(0.8)
+        sa12_content.next_to(sa12_title, RIGHT, buff=0.1)
+        sa12_vg = VGroup(sa12_title, sa12_content)
+
         r12_tex = MathTex("R_{12}", font_size=24, color=BLACK)
         r12_box = Square(0.8, color=WHITE)
         r12_tex.move_to(r12_box.get_center())
         r12_title = VGroup(r12_tex, r12_box).scale(0.8)
-        r12_title.next_to(self.titles_vg[-1], DOWN, buff=0.3)
+        r12_title.next_to(sa12_title, DOWN, buff=0.3)
 
         a = [0 for _ in range(len(nums))]
         for i in range(len(nums)):
@@ -610,25 +617,7 @@ class Fig7to9(Scene):
         r12_content.next_to(r12_title, RIGHT, buff=0.1)
         r12_vg = VGroup(r12_title, r12_content)
 
-        for i in range(self.n1):
-            r12_content[i][0].set_fill(color=TEAL, opacity=1)
-        for i in range(self.n2):
-            r12_content[self.n1+i][0].set_fill(color=BLUE, opacity=1)
-
         self.play(ReplacementTransform(rkt1.copy(), r12_vg))
-
-        sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
-        sa12_box = Square(0.8, color=WHITE)
-        sa12_tex.move_to(sa12_box.get_center())
-        sa12_title = VGroup(sa12_tex, sa12_box).scale(0.8)
-        sa12_title.next_to(r12_title, DOWN, buff=0.3)
-
-        a = [0 for _ in range(len(nums))]
-        for i in range(len(nums)):
-            a[i] = self.t12[ords[i]]
-        sa12_content = Array(a, square_size=0.8).scale(0.8)
-        sa12_content.next_to(sa12_title, RIGHT, buff=0.1)
-        sa12_vg = VGroup(sa12_title, sa12_content)
 
         for i in range(len(nums)):
             if a[i] % 3 == 1:
@@ -640,15 +629,19 @@ class Fig7to9(Scene):
 
         self.wait()
 
-class Fig10(Scene):
+class Fig10to11(Scene):
     def construct(self):
         self.camera.background_color = WHITE
         t = [3, 3, 4, 1, 4, 5, 2]
+        # Fig 10
+        # self.add_t_t12(t)
+        # Fig 11
         self.add_t_t12(t)
+        self.sort()
 
     def add_t_t12(self, t):
         square_size = 0.8
-        titles = ["id", "T", "T_0", "T_{12}", "R_{12}", "SA_{12}"]
+        titles = ["id", "T", "T_0", "T_{12}", "SA_{12}", "R_{12}"]
         titles_vg = VGroup()
         for title in titles:
             title_tex = MathTex(title, font_size=24, color=BLACK)
@@ -667,29 +660,20 @@ class Fig10(Scene):
         n2 = (n - 2) // 3
         n12 = n1 + n2
 
-        tt = Array(t, square_size=square_size)
+        ids = Array([i for i in range(n)], square_size=square_size)
+        tt = Array(t, square_size=square_size, color=DARK_BROWN)
         for i in range(len(t)):
             if i < 3 * n0 and i % 3 == 0:
-                tt[i][0].set_fill(PURPLE, opacity=1)
+                ids[i][0].set_fill(PURPLE, opacity=1)
             elif i < 3 * n1 and i % 3 == 1:
-                tt[i][0].set_fill(TEAL, opacity=1)
+                ids[i][0].set_fill(TEAL, opacity=1)
             elif i < 3 * n2:
-                tt[i][0].set_fill(BLUE, opacity=1)
-
-        ids = VGroup()
-        for i in range(n):
-            tex = MathTex(str(i), font_size=22, color=BLACK)
-            box = Square(square_size, color=WHITE)
-            tex.move_to(box.get_center())
-            ids.add(VGroup(tex, box))
-        ids.arrange(RIGHT, buff=0).next_to(titles_vg[0], RIGHT, buff=0.1)
-        self.add(ids)
+                ids[i][0].set_fill(TEAL, opacity=1)
 
         t0 = [i * 3 for i in range(n0)]
         tt0 = Array(t0, square_size=square_size)
         for i in range(n0):
             tt0[i][0].set_fill(PURPLE, opacity=1)
-
 
         t1 = [i * 3 + 1 for i in range(n1)]
         t2 = [i * 3 + 2 for i in range(n2)]
@@ -706,10 +690,6 @@ class Fig10(Scene):
         for i in range(n12):
             r12[sa12[i]] = i + 1
         rr12 = Array(r12, square_size=square_size)
-        for i in range(n1):
-            rr12[i][0].set_fill(TEAL, opacity=1)
-        for i in range(n2):
-            rr12[n1+i][0].set_fill(BLUE, opacity=1)
 
         saa12 = Array([t12[i] for i in sa12], square_size=square_size)
         for i in range(n12):
@@ -718,10 +698,85 @@ class Fig10(Scene):
             else:
                 saa12[i][0].set_fill(BLUE, opacity=1)
 
-        contents = [tt, tt0, tt12, rr12, saa12] 
+        contents = [ids, tt, tt0, tt12, saa12, rr12] 
         for i in range(len(contents)):
-            contents[i].next_to(titles_vg[i + 1], RIGHT, buff=0.1)
+            contents[i].next_to(titles_vg[i], RIGHT, buff=0.1)
             self.add(contents[i])
+        
+        self.n, self.n0, self.n1, self.n2, self.n12 = n, n0, n1, n2, n12
+        self.t, self.t0, self.t12 = t, t0, t12
+        self.titles_vg = titles_vg
+        self.ids, self.tt, self.tt0, self.tt12, self.rr12 = ids, tt, tt0, tt12, rr12
+
+    def sort(self):
+        vg = VGroup()
+        vgg = VGroup()
+
+        vg0 = VGroup()
+        for i in self.t0:
+            vg0.add(self.tt[i].copy())
+        
+        vg1 = VGroup()
+        for i in range(self.n0):
+            vg1.add(self.rr12[i].copy())
+
+        for i in range(self.n0):
+            self.play(Indicate(self.tt[i * 3][0], color=BLACK),
+                      Indicate(self.tt0[i][0], color=PURPLE),
+                      Indicate(self.ids[i * 3][0], color=PURPLE))
+
+            if i == 0:
+                self.play(vg0[i].animate.shift(RIGHT * 6.4 + DOWN * 3))
+            else:
+                self.play(vg0[i].animate.next_to(vg0[i - 1], DOWN, buff=0.3))
+
+            self.play(Indicate(self.tt12[i][0], color=TEAL),
+                      Indicate(self.rr12[i][0], color=BLACK))
+
+            self.play(vg1[i].animate.next_to(vg0[i], RIGHT, buff=0))
+
+            vg.add(VGroup(vg0[i].copy(), vg1[i].copy()))
+            vgg.add(VGroup(vg0[i], vg1[i]))
+
+        # sort
+        ords = VGroup(*[MathTex(str(i), font_size=24, color=BLACK) for i in self.t0])
+        for i in range(self.n0):
+            ords[i].next_to(vgg[i], LEFT, buff=0.3)
+        self.play(FadeIn(ords))
+        self.wait()
+
+        sa0 = [i for i in self.t0]
+        for i in range(self.n0):
+            for j in range(i + 1, self.n0):
+                if vg[i][0][1].text + vg[i][1][1].text > vg[j][0][1].text + vg[j][1][1].text:
+                    vg[i], vg[j] = vg[j], vg[i]
+                    sa0[i], sa0[j] = sa0[j], sa0[i]
+
+        ords1 = VGroup(*[MathTex(str(i), font_size=24, color=BLACK) for i in sa0])
+        for i in range(self.n0):
+            ords1[i].next_to(vgg[i], LEFT, buff=0.3)
+
+        for i in range(self.n0):
+            vg[i].move_to(vgg[i])
+        self.play(ReplacementTransform(vgg, vg), ReplacementTransform(ords, ords1))
+        self.wait()
+
+        title0 = MathTex("SA_0", font_size=24, color=BLACK)
+        saa0 = Array(sa0, color=BLACK, square_size=0.8)
+        for x in saa0:
+            x[0].set_fill(PURPLE, opacity=1)
+
+        saa0.next_to(self.tt0, RIGHT, buff=3.22)
+        title0.next_to(saa0, LEFT, buff=0.3)
+
+        self.play(ReplacementTransform(ords.copy(), VGroup(saa0, title0)))
+
+        self.wait()
+
+class Fig11(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        
 
 class BuildSuffixArray(Scene):
     def construct(self):
