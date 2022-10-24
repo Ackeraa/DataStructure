@@ -773,10 +773,96 @@ class Fig10to11(Scene):
 
         self.wait()
 
-class Fig11(Scene):
+class Fig12(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        
+
+        # Fig 12
+        t = [3, 3, 4, 1, 4, 5, 2] + [0, 0, 0]
+        self.add_base(t)
+        #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
+
+    def add_base(self, t):
+        square_size=0.6
+
+        titles = ["id", "T", "SA_0", "SA_{12}", "R_{12}", "SA"]
+        titles_vg = VGroup()
+        for title in titles:
+            title_tex = MathTex(title, font_size=24, color=BLACK)
+            title_box = Square(square_size, color=WHITE)
+            title_tex.move_to(title_box.get_center())
+            titles_vg.add(VGroup(title_tex, title_box))
+        titles_vg.arrange(DOWN, buff=0.7).shift(LEFT * 6)
+        titles_vg[0].shift(DOWN*0.7)
+        titles_vg[4].next_to(titles_vg[3], RIGHT, buff=4.5)
+        titles_vg[5].shift(UP*1.2)
+
+        self.add(titles_vg)
+
+        n = len(t)
+        n0 = (n - 1) // 3
+        n1 = (n - 1) // 3
+        n2 = (n - 2) // 3
+        n12 = n1 + n2
+
+        tt = Array(t, square_size=square_size, color=DARK_BROWN)
+
+        ids = Array([i for i in range(n)], square_size=square_size)
+        for i in range(len(t)):
+            if i < 3 * n0 and i % 3 == 0:
+                ids[i][0].set_fill(PURPLE, opacity=1)
+            elif i < 3 * n1 and i % 3 == 1:
+                ids[i][0].set_fill(TEAL, opacity=1)
+            elif i < 3 * n2:
+                ids[i][0].set_fill(TEAL, opacity=1)
+
+        t0 = [i * 3 for i in range(n0)]
+        t1 = [i * 3 + 1 for i in range(n1)]
+        t2 = [i * 3 + 2 for i in range(n2)]
+        t12 = t1 + t2
+        seq0 = [t[i:] for i in t0]
+        sa0 = sorted(range(len(seq0)), key=seq0.__getitem__)
+        seq12 = [t[i:] for i in t12]
+        sa12 = sorted(range(len(seq12)), key=seq12.__getitem__)
+        seq = [t[i:] for i in range(n0 + n12)]
+        sa = sorted(range(len(seq)), key=seq.__getitem__)
+        r12 = [0 for _ in range(n12)]
+        for i in range(n12):
+            r12[sa12[i]] = i + 1
+
+        for i in range(n0):
+            sa0[i] = t0[sa0[i]]
+        for i in range(n12):
+            sa12[i] = t12[sa12[i]]
+
+        saa0 = Array(sa0, square_size=square_size)
+        for i in range(n0):
+            saa0[i][0].set_fill(PURPLE, opacity=1)
+
+        rr12 = Array(r12, square_size=square_size)
+        saa12 = Array(sa12, square_size=square_size)
+        for i in range(n12):
+            if sa12[i] % 3 == 1:
+                saa12[i][0].set_fill(TEAL, opacity=1)
+            else:
+                saa12[i][0].set_fill(BLUE, opacity=1)
+
+        saa = Array(sa, square_size=square_size)
+        for i in range(len(sa)):
+            if sa[i] % 3 == 0:
+                saa[i][0].set_fill(PURPLE, opacity=1)
+            elif i % 3 == 1:
+                saa[i][0].set_fill(TEAL, opacity=1)
+            else:
+                saa[i][0].set_fill(BLUE, opacity=1)
+
+        contents = [ids, tt, saa0, saa12, rr12, saa] 
+        for i in range(len(contents)):
+            contents[i].next_to(titles_vg[i], RIGHT, buff=0.1)
+            self.add(contents[i])
+
+        # animation
+
 
 class BuildSuffixArray(Scene):
     def construct(self):
