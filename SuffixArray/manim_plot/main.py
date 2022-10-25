@@ -422,18 +422,18 @@ class Fig7to9(Scene):
     def construct(self):
         self.camera.background_color = WHITE
         # Fig 7
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
-        # self.add_t_t12(t)
+        #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        #self.add_t_t12(t)
 
         # Fig 8
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
-        self.add_t_t12(t)
-        self.sort(3.33, 7)
+        #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        #self.add_t_t12(t)
+        #self.sort(3.33, 7)
 
         # Fig 9
         t = [3, 3, 4, 1, 4, 5, 2]
-        #self.add_t_t12(t)
-        #self.sort(1.3, 7)
+        self.add_t_t12(t)
+        self.sort(1.3, 7)
 
     def add_t_t12(self, t):
         square_size = 0.8
@@ -634,7 +634,7 @@ class Fig10to11(Scene):
         self.camera.background_color = WHITE
         t = [3, 3, 4, 1, 4, 5, 2]
         # Fig 10
-        # self.add_t_t12(t)
+        #self.add_t_t12(t)
         # Fig 11
         self.add_t_t12(t)
         self.sort()
