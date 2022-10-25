@@ -814,7 +814,7 @@ class Fig12(Scene):
             elif i < 3 * n1 and i % 3 == 1:
                 ids[i][0].set_fill(TEAL, opacity=1)
             elif i < 3 * n2:
-                ids[i][0].set_fill(TEAL, opacity=1)
+                ids[i][0].set_fill(BLUE, opacity=1)
 
         t0 = [i * 3 for i in range(n0)]
         t1 = [i * 3 + 1 for i in range(n1)]
@@ -861,9 +861,26 @@ class Fig12(Scene):
             contents[i].next_to(titles_vg[i], RIGHT, buff=0.1)
             self.add(contents[i])
 
+        tt12 = Array(t12, square_size=square_size)
+        for i in range(n1):
+            tt12[i][0].set_fill(TEAL, opacity=1)
+        for i in range(n2):
+            tt12[n1+i][0].set_fill(BLUE, opacity=1)
+        tt_title = MathTex("id", font_size=24, color=BLACK)
+        tt12.next_to(rr12, UP, buff=0)
+        tt_title.next_to(tt12, LEFT, buff=0.3)
+        self.add(tt_title, tt12)
+
         # animation
+        ar = Triangle(color=RED_E).set_fill(RED, opacity=1).rotate(-180*DEGREES).scale(.03)
+        ari = VGroup(MathTex("i", font_size=20, color=BLACK), ar.copy()).arrange(DOWN, buff=0.1)
+        arj = VGroup(MathTex("j", font_size=20, color=BLACK), ar.copy()).arrange(DOWN, buff=0.1)
 
+        ari.next_to(saa0[0], UP, buff=0.1)
+        arj.next_to(saa12[0], UP, buff=0.1)
 
+        self.add(ari, arj)
+        
 class BuildSuffixArray(Scene):
     def construct(self):
         self.camera.background_color = WHITE
