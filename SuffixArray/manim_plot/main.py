@@ -859,7 +859,8 @@ class Fig12(Scene):
         contents = [ids, tt, saa0, saa12, rr12, saa] 
         for i in range(len(contents)):
             contents[i].next_to(titles_vg[i], RIGHT, buff=0.1)
-            self.add(contents[i])
+            if i < len(contents) - 1:
+                self.add(contents[i])
 
         tt12 = Array(t12, square_size=square_size)
         for i in range(n1):
@@ -880,6 +881,149 @@ class Fig12(Scene):
         arj.next_to(saa12[0], UP, buff=0.1)
 
         self.add(ari, arj)
+
+        # 1
+        t1_1_title = Info("T[a]", color=BLACK)
+        t1_1_title.move_to(RIGHT * 4.5 + UP * 2.5)
+        t1_1_value = Info()
+        t1_1_value.next_to(t1_1_title, DOWN, buff=0)
+        
+        cmp1 = Info()
+        cmp1.next_to(t1_1_value, RIGHT, buff=0.2)
+
+        t2_1_title = Info("T[b]", color=BLACK)
+        t2_1_value = Info()
+        t2_1_title.next_to(t1_1_title, RIGHT, buff=1)
+        t2_1_value.next_to(t2_1_title, DOWN, buff=0)
+
+        # 2
+        t1_2_title = Info()
+        t1_2_value = Info()
+        t1_2_title.next_to(t1_1_value, DOWN, buff=0.2)
+        t1_2_value.next_to(t1_2_title, DOWN, buff=0)
+        
+        cmp2 = Info()
+        cmp2.next_to(t1_2_value, RIGHT, buff=0.2)
+
+        t2_2_title = Info()
+        t2_2_value = Info()
+        t2_2_title.next_to(t1_2_title, RIGHT, buff=1)
+        t2_2_value.next_to(t2_2_title, DOWN, buff=0)
+
+        # 3
+        t1_3_title = Info()
+        t1_3_value = Info()
+        t1_3_title.next_to(t1_2_value, DOWN, buff=0.2)
+        t1_3_value.next_to(t1_3_title, DOWN, buff=0)
+        
+        cmp3 = Info()
+        cmp3.next_to(t1_2_value, RIGHT, buff=0.2)
+
+        t2_3_title = Info()
+        t2_3_value = Info()
+        t2_3_title.next_to(t1_3_title, RIGHT, buff=1)
+        t2_3_value.next_to(t2_3_title, DOWN, buff=0)
+
+        self.add(t1_1_title, t1_1_value, t2_1_title, t2_1_value, cmp1,
+                t1_2_title, t1_2_value, t2_2_title, t2_2_value, cmp2,
+                t1_3_title, t1_3_value, t2_3_title, t2_3_value, cmp3)
+
+        i = j = 0
+        ssa = []
+        r12 += [0, 0, 0]
+        while i < n0 and j < n12:
+            a = sa0[i]
+            b = sa12[j]
+            self.play(Indicate(tt[a][0], color=BLACK),
+                      Indicate(tt[b][0], color=BLACK))
+            self.play(t1_1_value.animate.update_text(t[a]),
+                      t2_1_value.animate.update_text(t[b]))
+
+            if t[a] < t[b]:
+                pd = 1
+                self.play(cmp1.animate.update_text("<"))
+            elif t[a] > t[b]:
+                pd = 0
+                self.play(cmp1.animate.update_text(">"))
+            elif b % 3 == 1:
+                self.play(cmp1.animate.update_text("="))
+
+                self.play(t1_2_title.animate.update_text("R_{12}[a+1]"),
+                          t2_2_title.animate.update_text("R_{12}[b+1]"))
+
+                self.play(Indicate(rr12[(a + 1) // 3][0], color=BLACK),
+                          Indicate(rr12[n1 + (b + 1) // 3][0], color=BLACK))
+
+                self.play(t1_2_value.animate.update_text(r12[(a + 1) // 3]),
+                            t2_2_value.animate.update_text(r12[n1 + (b + 1) // 3]))
+
+                if (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3]):
+                    pd = 1
+                    self.play(cmp2.animate.update_text("<"))
+                else:
+                    pd = 0
+                    self.play(cmp2.animate.update_text(">"))
+            elif b % 3 == 2:
+                self.play(cmp1.animate.update_text(">"))
+
+                self.play(t1_2_title.animate.update_text("T[a+1]"),
+                            t2_2_title.animate.update_text("T[b+1]"))
+
+                self.play(Indicate(tt[a + 1][0], color=BLACK),
+                          Indicate(tt[b + 1][0], color=BLACK))
+
+                self.play(t1_2_value.animate.update_text(t[a+1]),
+                            t2_2_value.animate.update_text(t[b+1]))
+
+                if t[a + 1] < t[b + 1]:
+                    pd = 1
+                    self.play(cmp2.animate.update_text("<"))
+                elif t[a + 2] < t[b + 2]:
+                    pd = 0
+                    self.play(cmp2.animate.update_text(">"))
+                else:
+                    self.play(cmp2.animate.update_text("="))
+                    self.play(t1_3_title.animate.update_text("R[a+2]"),
+                            t2_3_title.animate.update_text("R[b+2]"))
+
+                    self.play(Indicate(rr12[(a + 2) // 3][0], color=BLACK),
+                              Indicate(rr12[n1 + (b + 2) // 3][0], color=BLACK))
+
+                    self.play(t1_3_value.animate.update_text(r12[(a + 2) // 3]),
+                            t2_3_value.animate.update_text(r12[n1 + (b + 2) // 3]))
+
+                    if r12[n1 + (a + 2) // 3] < r12[(b + 2) // 3]:
+                        pd = 1
+                        self.play(cmp3.animate.update_text("<"))
+                    else:
+                        pd = 0
+                        self.play(cmp3.animate.update_text(">"))
+
+            if pd == 1:
+                self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
+                ssa.append(a)
+                i += 1
+                if i < n0:
+                    self.play(ari.animate.next_to(saa0[i], UP, buff=0.1))
+                if i == n0:
+                    while j < n12:
+                        self.play(arj.animate.next_to(saa12[j], UP, buff=0.1))
+                        self.play(ReplacementTransform(saa12[j].copy(), saa[len(ssa)]))
+                        ssa.append(sa12[j])
+                        j += 1
+            else: 
+                self.play(ReplacementTransform(saa12[j].copy(), saa[len(ssa)]))
+                ssa.append(b)
+                j += 1
+                if j < n12:
+                    self.play(arj.animate.next_to(saa12[j], UP, buff=0.1))
+                if j == n12:
+                    while i < n0:
+                        self.play(ari.animate.next_to(saa0[i], UP, buff=0.1))
+                        self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
+                        ssa.append(sa0[i])
+                        i += 1
+        print(ssa)
         
 class BuildSuffixArray(Scene):
     def construct(self):
@@ -1120,4 +1264,15 @@ class BuildSuffixArray(Scene):
                 a[num] = i
                 num += 1
 
+        self.wait()
+
+class Test(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        t = Info("T[a]", RIGHT * 4.5 + UP * 2.5)
+        print(t.get_center() + DOWN)
+        t1 = Info("T[a]")
+        self.add(t)
+        self.wait()
+        self.play(t.animate.update_text("sd"))
         self.wait()

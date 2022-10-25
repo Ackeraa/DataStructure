@@ -34,3 +34,15 @@ class TrieNode(VGroup):
         self.value = Text(value, color=color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
         super().add(self.value)
 
+class Info(VGroup):
+    def __init__(self, txt="1", pos=DOWN*3, color=WHITE):
+        self.square = Square(0.6, color=WHITE, stroke_width=2)
+        self.square.move_to(pos)
+        self.text = MathTex(txt, color=color, font_size=20)
+        self.text.move_to(self.square.get_center())
+        super().__init__(self.text, self.square)
+
+    def update_text(self, text, font_size=20):
+        self.text = self.text.become(MathTex(str(text), color=BLACK, font_size=font_size))
+        self.text.move_to(self.square.get_center())
+
