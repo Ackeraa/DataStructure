@@ -40,9 +40,15 @@ class Info(VGroup):
         self.square.move_to(pos)
         self.text = MathTex(txt, color=color, font_size=20)
         self.text.move_to(self.square.get_center())
-        super().__init__(self.text, self.square)
+        super().__init__(self.square, self.text)
 
-    def update_text(self, text, font_size=20):
-        self.text = self.text.become(MathTex(str(text), color=BLACK, font_size=font_size))
+    def update_text(self, text="*", font_size=20):
+        if text == "*":
+            color = WHITE
+        else:
+            color = BLACK
+        self.text = self.text.become(MathTex(str(text), color=color, font_size=font_size))
         self.text.move_to(self.square.get_center())
+
+        return self
 

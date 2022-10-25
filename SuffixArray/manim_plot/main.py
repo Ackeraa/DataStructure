@@ -779,6 +779,7 @@ class Fig12(Scene):
 
         # Fig 12
         t = [3, 3, 4, 1, 4, 5, 2] + [0, 0, 0]
+        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
         self.add_base(t)
         #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
 
@@ -889,7 +890,7 @@ class Fig12(Scene):
         t1_1_value.next_to(t1_1_title, DOWN, buff=0)
         
         cmp1 = Info()
-        cmp1.next_to(t1_1_value, RIGHT, buff=0.2)
+        cmp1.next_to(t1_1_title, RIGHT, buff=0.2)
 
         t2_1_title = Info("T[b]", color=BLACK)
         t2_1_value = Info()
@@ -903,7 +904,7 @@ class Fig12(Scene):
         t1_2_value.next_to(t1_2_title, DOWN, buff=0)
         
         cmp2 = Info()
-        cmp2.next_to(t1_2_value, RIGHT, buff=0.2)
+        cmp2.next_to(t1_2_title, RIGHT, buff=0.2)
 
         t2_2_title = Info()
         t2_2_value = Info()
@@ -917,7 +918,7 @@ class Fig12(Scene):
         t1_3_value.next_to(t1_3_title, DOWN, buff=0)
         
         cmp3 = Info()
-        cmp3.next_to(t1_2_value, RIGHT, buff=0.2)
+        cmp3.next_to(t1_3_title, RIGHT, buff=0.2)
 
         t2_3_title = Info()
         t2_3_value = Info()
@@ -934,70 +935,90 @@ class Fig12(Scene):
         while i < n0 and j < n12:
             a = sa0[i]
             b = sa12[j]
-            self.play(Indicate(tt[a][0], color=BLACK),
-                      Indicate(tt[b][0], color=BLACK))
+            self.play(Indicate(tt[a][0], color=RED),
+                      Indicate(tt[b][0], color=RED))
             self.play(t1_1_value.animate.update_text(t[a]),
-                      t2_1_value.animate.update_text(t[b]))
+                      t2_1_value.animate.update_text(t[b]),
+                      ReplacementTransform(tt[a].copy(), t1_1_value),
+                      ReplacementTransform(tt[b].copy(), t2_1_value))
 
             if t[a] < t[b]:
                 pd = 1
                 self.play(cmp1.animate.update_text("<"))
+                self.wait(0.8)
             elif t[a] > t[b]:
                 pd = 0
                 self.play(cmp1.animate.update_text(">"))
+                self.wait(0.8)
             elif b % 3 == 1:
                 self.play(cmp1.animate.update_text("="))
+                self.wait(0.8)
 
                 self.play(t1_2_title.animate.update_text("R_{12}[a+1]"),
                           t2_2_title.animate.update_text("R_{12}[b+1]"))
 
-                self.play(Indicate(rr12[(a + 1) // 3][0], color=BLACK),
-                          Indicate(rr12[n1 + (b + 1) // 3][0], color=BLACK))
+                self.play(Indicate(rr12[(a + 1) // 3][0], color=RED),
+                          Indicate(rr12[n1 + (b + 1) // 3][0], color=RED))
+
 
                 self.play(t1_2_value.animate.update_text(r12[(a + 1) // 3]),
-                            t2_2_value.animate.update_text(r12[n1 + (b + 1) // 3]))
+                          t2_2_value.animate.update_text(r12[n1 + (b + 1) // 3]),
+                          ReplacementTransform(rr12[(a + 1) // 3].copy(), t1_2_value),
+                          ReplacementTransform(rr12[n1 + (b + 1) // 3].copy(), t2_2_value))
 
                 if (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3]):
                     pd = 1
                     self.play(cmp2.animate.update_text("<"))
+                    self.wait(0.8)
                 else:
                     pd = 0
                     self.play(cmp2.animate.update_text(">"))
+                    self.wait(0.8)
             elif b % 3 == 2:
-                self.play(cmp1.animate.update_text(">"))
+                self.play(cmp1.animate.update_text("="))
+                self.wait(0.8)
 
                 self.play(t1_2_title.animate.update_text("T[a+1]"),
                             t2_2_title.animate.update_text("T[b+1]"))
 
-                self.play(Indicate(tt[a + 1][0], color=BLACK),
-                          Indicate(tt[b + 1][0], color=BLACK))
+                self.play(Indicate(tt[a + 1][0], color=RED),
+                          Indicate(tt[b + 1][0], color=RED))
 
                 self.play(t1_2_value.animate.update_text(t[a+1]),
-                            t2_2_value.animate.update_text(t[b+1]))
+                          t2_2_value.animate.update_text(t[b+1]),
+                          ReplacementTransform(tt[a + 1].copy(), t1_2_value),
+                          ReplacementTransform(tt[b + 1].copy(), t2_2_value))
 
                 if t[a + 1] < t[b + 1]:
                     pd = 1
                     self.play(cmp2.animate.update_text("<"))
+                    self.wait(0.8)
                 elif t[a + 2] < t[b + 2]:
                     pd = 0
                     self.play(cmp2.animate.update_text(">"))
+                    self.wait(0.8)
                 else:
                     self.play(cmp2.animate.update_text("="))
+                    self.wait(0.8)
                     self.play(t1_3_title.animate.update_text("R[a+2]"),
                             t2_3_title.animate.update_text("R[b+2]"))
 
-                    self.play(Indicate(rr12[(a + 2) // 3][0], color=BLACK),
-                              Indicate(rr12[n1 + (b + 2) // 3][0], color=BLACK))
+                    self.play(Indicate(rr12[(a + 2) // 3][0], color=RED),
+                              Indicate(rr12[(b + 2) // 3][0], color=RED))
 
                     self.play(t1_3_value.animate.update_text(r12[(a + 2) // 3]),
-                            t2_3_value.animate.update_text(r12[n1 + (b + 2) // 3]))
+                              t2_3_value.animate.update_text(r12[(b + 2) // 3]),
+                              ReplacementTransform(rr12[(a + 2) // 3].copy(), t1_3_value),
+                              ReplacementTransform(rr12[(b + 2) // 3].copy(), t2_3_value))
 
                     if r12[n1 + (a + 2) // 3] < r12[(b + 2) // 3]:
                         pd = 1
                         self.play(cmp3.animate.update_text("<"))
+                        self.wait(0.8)
                     else:
                         pd = 0
                         self.play(cmp3.animate.update_text(">"))
+                        self.wait(0.8)
 
             if pd == 1:
                 self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
@@ -1023,8 +1044,23 @@ class Fig12(Scene):
                         self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
                         ssa.append(sa0[i])
                         i += 1
-        print(ssa)
-        
+
+            self.play(
+                    t1_1_value.animate.update_text(),
+                    t2_1_value.animate.update_text(),
+                    t1_2_title.animate.update_text(),
+                    t1_2_value.animate.update_text(),
+                    t1_3_title.animate.update_text(),
+                    t1_3_value.animate.update_text(),
+                    t2_2_title.animate.update_text(),
+                    t2_2_value.animate.update_text(),
+                    t2_3_title.animate.update_text(),
+                    t2_3_value.animate.update_text(),
+                    cmp1.animate.update_text(),
+                    cmp2.animate.update_text(),
+                    cmp3.animate.update_text()
+            )
+
 class BuildSuffixArray(Scene):
     def construct(self):
         self.camera.background_color = WHITE
@@ -1268,11 +1304,8 @@ class BuildSuffixArray(Scene):
 
 class Test(Scene):
     def construct(self):
-        self.camera.background_color = WHITE
-        t = Info("T[a]", RIGHT * 4.5 + UP * 2.5)
-        print(t.get_center() + DOWN)
-        t1 = Info("T[a]")
-        self.add(t)
-        self.wait()
-        self.play(t.animate.update_text("sd"))
-        self.wait()
+        t = Square()
+        t1 = Circle().shift(RIGHT * 3)
+        self.add(t, t1)
+        self.wait(2)
+        self.play(ClockwiseTransform(t, t1))
