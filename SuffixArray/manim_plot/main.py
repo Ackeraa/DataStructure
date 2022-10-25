@@ -1100,15 +1100,15 @@ class BuildSuffixArray(Scene):
         self.msa0 = Array(t)
         self.add(self.mt[:-3])
 
-        ''' add zeros
+        #''' add zeros
         self.play(FadeIn(self.mt[-3:]))
-        '''
-
-        #''' add zeros 1
-        self.add(self.mt[-3:])
         #'''
 
-        ''' set color
+        ''' add zeros 1
+        self.add(self.mt[-3:])
+        '''
+
+        #''' set color
         anims0_0, anims0_1, anims0_2 = [], [], []
         for i in range(n):
             if i < 3 * n0 and i % 3 == 0:
@@ -1121,9 +1121,9 @@ class BuildSuffixArray(Scene):
         self.play(*anims0_0, run_time=1)
         self.play(*anims0_1, run_time=1)
         self.play(*anims0_2, run_time=1)
-        '''
+        #'''
 
-        #''' set color 1
+        ''' set color 1
         for i in range(n):
             if i < 3 * n0 and i % 3 == 0:
                 self.mt[i][0].set_fill(PURPLE, opacity=1)
@@ -1131,7 +1131,7 @@ class BuildSuffixArray(Scene):
                 self.mt[i][0].set_fill(TEAL, opacity=1)
             elif i < 3 * n2:
                 self.mt[i][0].set_fill(BLUE, opacity=1)
-        #'''
+        '''
 
         self.msa1 = Array(t[1:1+n1*3]).move_to(self.mt[:-1]).shift(DOWN)
         self.msa2 = Array(t[2:2+n2*3]).move_to(self.msa1[:-1]).shift(DOWN)
@@ -1143,7 +1143,7 @@ class BuildSuffixArray(Scene):
             self.msa12[n1 * 3 + i * 3][0].set_fill(BLUE, opacity=1)
             self.msa2[i * 3][0].set_fill(BLUE, opacity=1)
 
-        ''' split 
+        #''' split 
         anims1_1, anims1_2 = [], []
         anims1_1.append(ReplacementTransform(self.mt[1:].copy(), self.msa1))
         anims1_1.append(ReplacementTransform(self.mt[2:].copy(), self.msa2))
@@ -1152,7 +1152,7 @@ class BuildSuffixArray(Scene):
         anims1_2.append(ReplacementTransform(self.msa2, self.msa12[n1 * 3:]))
         self.playa(anims1_1)
         self.play(*anims1_2)
-        '''
+        #'''
 
         #''' split 1
         self.add(self.msa12)
@@ -1169,8 +1169,8 @@ class BuildSuffixArray(Scene):
                 t = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
                 buckets.add(l, t)
 
-        #self.play(Create(buckets))
-        self.add(buckets)
+        self.play(Create(buckets))
+        #self.add(buckets)
 
         nums = VGroup()
         anims = []
@@ -1182,13 +1182,13 @@ class BuildSuffixArray(Scene):
             anims.append(ReplacementTransform(self.msa12[i * 3: i * 3 + 3].copy(), num))
         nums.arrange(RIGHT, buff=0.4).shift(DOWN * 2.5)
         
-        ''' divide by 3
+        #''' divide by 3
         self.playa(anims)
-        '''
-
-        #''' divide by 3 1
-        self.add(nums)
         #'''
+
+        ''' divide by 3 1
+        self.add(nums)
+        '''
 
         for j in range(1):
             anims = []
@@ -1301,11 +1301,3 @@ class BuildSuffixArray(Scene):
                 num += 1
 
         self.wait()
-
-class Test(Scene):
-    def construct(self):
-        t = Square()
-        t1 = Circle().shift(RIGHT * 3)
-        self.add(t, t1)
-        self.wait(2)
-        self.play(ClockwiseTransform(t, t1))
