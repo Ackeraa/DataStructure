@@ -20,15 +20,15 @@ class SuffixTree:
         
         self.cnt = 0
         self.root = SuffixTreeNode()
-        self.build(cartesian_tree.root, self.root, 0)
+        self.build(cartesian_tree.root, self.root)
         self.sa1 = []
         self.traverse(self.root)
 
-    def build(self, u, node, cnt):
+    def build(self, u, node):
         for v in (u.lchild, u.rchild):
             # [l, r)
             if v is None:
-                if self.cnt >= len(self.sa):
+                if self.cnt == len(self.sa):
                     break
                 l = self.sa[self.cnt]
                 r = len(self.t)
@@ -36,13 +36,13 @@ class SuffixTree:
                 node.children[c] = SuffixTreeNode(l, r)
                 self.cnt += 1
             elif self.height[u.index] == self.height[v.index]: # fusion
-                self.build(v, node, cnt)
+                self.build(v, node)
             else:
                 l = self.sa[v.index]
                 r = l + self.height[v.index]
                 c = self.t[l + node.r - node.l]
                 node.children[c] = SuffixTreeNode(l, r)
-                self.build(v, node.children[c], cnt)
+                self.build(v, node.children[c])
 
     def traverse(self, u):
         for c in u.children:
@@ -53,4 +53,5 @@ class SuffixTree:
 
 if __name__ == '__main__':
     text = "abcabcacab"
+    text = "cbacbacacb$"
     suffix_tree = SuffixTree(text)

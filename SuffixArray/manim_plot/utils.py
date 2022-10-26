@@ -23,7 +23,7 @@ class TrieNode(VGroup):
         self.idx = idx
         self.text = None
         self.node = Circle(size).set_color(node_color).set_fill(WHITE, opacity=1)
-        self.value = Text(value, color=text_color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
+        self.value = Text(str(value), color=text_color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
         super().__init__(self.node, self.value)
 
     def set_text(self, value, scale=0.4, split=False):
@@ -33,6 +33,44 @@ class TrieNode(VGroup):
             value = value[:4] + "\n" + (len(value) - 4) // 2 * " " + value[4:]
         self.value = Text(value, color=color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
         super().add(self.value)
+
+class SuffixTreeNode(VGroup):
+    def __init__(self, value="0", l=0, r=0, size=0.3):
+        self.children = {} # could use hash table to get linear time.
+        self.edges = {}
+        self.l = l
+        self.r = r
+        self.idx = int(value)
+        self.node = Circle(size).set_color(BLACK).set_fill(WHITE, opacity=1)
+        self.value = Text(str(value), color=BLACK, font="DroidSansMono Nerd Font").scale(0.6).move_to(self.node.get_center())
+        super().__init__(self.node, self.value)
+
+    def add_edge(self, v):
+        p1 = self.node.get_center()
+        p2 = v.node.get_center()
+        dp1 = np.array(p2 - p1)
+        lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+        dp1 = dp1 / lp * v[0].radius
+        dp2 = np.array(p1 - p2)
+        lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+        dp2 = dp2 / lp * v[0].radius
+        e = Line(p1+dp1, p2+dp2, color=BLACK)
+
+        def udt(m):
+            p1 = self.node.get_center()
+            p2 = v.node.get_center()
+            dp1 = np.array(p2 - p1)
+            lp = math.sqrt(dp1[0] ** 2 + dp1[1] ** 2)
+            dp1 = dp1 / lp * v[0].radius
+            dp2 = np.array(p1 - p2)
+            lp = math.sqrt(dp2[0] ** 2 + dp2[1] ** 2)
+            dp2 = dp2 / lp * v[0].radius
+
+            return m.put_start_and_end_on(p1+dp1, p2+dp2)
+
+        e.add_updater(udt)
+
+        return e
 
 class Info(VGroup):
     def __init__(self, txt="1", pos=DOWN*3, color=WHITE):

@@ -1,5 +1,9 @@
 from manim import *
 from utils import *
+sys.path.insert(0, '../../RMQ')
+sys.path.insert(0, '../')
+from cartesian_stack import CartesianTree
+from suffix_array import SuffixArray
 
 class Fig1to2(Scene):
     def construct(self):
@@ -1083,6 +1087,110 @@ class Fig12and14(Scene):
                     cmp3.animate.update_text()
             )
 
+
+        
+class Fig16(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        self.t = "cbacbacacb$"
+        suffix_array = SuffixArray(self.t)
+        self.sa = suffix_array.sa
+        self.height = suffix_array.height
+        cartesian_tree = CartesianTree(self.height)
+        rt = cartesian_tree.root
+
+        self.hh = Array(self.height, square_size=0.8).shift(DOWN*3.2)
+        self.add(self.hh)
+
+        self.nodes = VGroup()
+        self.edges = VGroup()
+        root = SuffixTreeNode(rt.index).move_to(self.hh[rt.index]).shift(UP*6)
+        self.add_nodes1(rt, root)
+        self.adjust_nodes(root)
+        self.add_edges(root)
+    
+        self.add(self.nodes, self.edges)
+
+        root1 = root.copy()
+        self.fusion(root, root1)
+
+
+        self.cnt = 0
+        self.wait()
+        #root = SuffixTreeNode()
+        #self.build(cartesian_tree.root, root)
+
+    def add_nodes1(self, u, node):
+        self.nodes.add(node)
+        for v in (u.lchild, u.rchild):
+            if v is not None:
+                l = self.sa[v.index]
+                r = l + self.height[v.index]
+                c = self.t[l + node.r - node.l]
+                node.children[c] = SuffixTreeNode(v.index, l, r)
+                self.add_nodes1(v, node.children[c])
+
+    def adjust_nodes(self, u):
+        for c in u.children:
+            if u.children[c] is not None:
+                v = u.children[c]
+                v.move_to([self.hh[v.idx].get_center()[0], u.get_center()[1] - 0.8, 0])
+                self.adjust_nodes(v)
+
+    def add_edges(self, father):
+        for c in father.children:
+            child = father.children[c]
+            e = father.add_edge(child)
+            self.edges.add(e)
+            self.add_edges(child)
+
+    def fusion(self, u, node):
+        #self.play(Indicate(u.node, color=TEAL))
+        for c in u.children.copy():
+            v = u.children[c]
+            if self.height[u.idx] == self.height[v.idx]: # fusion
+                anims = []
+                self.play(Indicate(self.hh[u.idx], color=RED), 
+                          Indicate(self.hh[v.idx], color=RED),
+                          Indicate(u.node, color=RED),
+                          Indicate(v.node, color=RED))
+                self.play(v.animate.move_to([v.get_center()[0], u.get_center()[1], 0]))
+
+                def place(u):
+                    for c in u.children:
+                        v = u.children[c]
+                        pos = u.get_center()[1]-0.8
+                        anims.append(v)
+                        place(v)
+                place(v)
+                self.play(VGroup(*anims).animate.shift(UP * 0.8))
+
+                self.fusion(v, node)
+            else:
+                node.children[c] = v.copy()
+                self.fusion(v, node.children[c])
+
+    def build(self, u, node):
+        for v in (u.lchild, u.rchild):
+            # [l, r)
+            if v is None:
+                if self.cnt == len(self.sa):
+                    break
+                l = self.sa[self.cnt]
+                r = len(self.t)
+                c = self.t[l + node.r - node.l]
+                node.children[c] = SuffixTreeNode(l, r)
+                self.cnt += 1
+            elif self.height[u.index] == self.height[v.index]: # fusion
+                self.build(v, node)
+            else:
+                l = self.sa[v.index]
+                r = l + self.height[v.index]
+                c = self.t[l + node.r - node.l]
+                node.children[c] = SuffixTreeNode(l, r)
+                self.build(v, node.children[c])
+
+
 class BuildSuffixArray(Scene):
     def construct(self):
         self.camera.background_color = WHITE
@@ -1322,4 +1430,19 @@ class BuildSuffixArray(Scene):
                 a[num] = i
                 num += 1
 
+        self.wait()
+
+class Test(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        n1 = SuffixTreeNode("1")
+        n2 = SuffixTreeNode("2").shift(LEFT+DOWN*2)
+        n3 = SuffixTreeNode("3").shift(RIGHT+DOWN*2)
+        n1.add_edge(n3)
+        n1.add_edge(n2)
+        self.add(n1, n2, n3)
+        self.wait()
+        self.play(n1.animate.shift(UP))
+        self.play(n2.animate.shift(DOWN))
+        self.play(n3.animate.shift(DOWN+RIGHT))
         self.wait()

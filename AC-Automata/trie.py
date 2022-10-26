@@ -3,7 +3,7 @@ from collections import defaultdict
 class TrieNode:
     
     def __init__(self, pattern=None):
-        self.children = defaultdict(TrieNode)
+        self.children = defaultdict(TrieNode) # could use hash table to get linear time.
         self.pattern = None
 
 class Trie:
