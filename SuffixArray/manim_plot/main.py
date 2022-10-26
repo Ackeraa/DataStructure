@@ -629,13 +629,19 @@ class Fig7to9(Scene):
 
         self.wait()
 
-class Fig10to11(Scene):
+class Fig10and11and13(Scene):
     def construct(self):
         self.camera.background_color = WHITE
         t = [3, 3, 4, 1, 4, 5, 2]
         # Fig 10
         #self.add_t_t12(t)
+
         # Fig 11
+        #self.add_t_t12(t)
+        #self.sort()
+
+        # Fig 13
+        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
         self.add_t_t12(t)
         self.sort()
 
@@ -726,7 +732,7 @@ class Fig10to11(Scene):
                       Indicate(self.ids[i * 3][0], color=PURPLE))
 
             if i == 0:
-                self.play(vg0[i].animate.shift(RIGHT * 6.4 + DOWN * 3))
+                self.play(vg0[i].animate.shift(RIGHT * 6.4 + DOWN * 2.5))
             else:
                 self.play(vg0[i].animate.next_to(vg0[i - 1], DOWN, buff=0.3))
 
@@ -852,7 +858,7 @@ class Fig12(Scene):
         for i in range(len(sa)):
             if sa[i] % 3 == 0:
                 saa[i][0].set_fill(PURPLE, opacity=1)
-            elif i % 3 == 1:
+            elif sa[i] % 3 == 1:
                 saa[i][0].set_fill(TEAL, opacity=1)
             else:
                 saa[i][0].set_fill(BLUE, opacity=1)
