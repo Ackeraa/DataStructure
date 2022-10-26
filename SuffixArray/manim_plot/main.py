@@ -372,6 +372,7 @@ class Fig6(Scene):
         self.add(titles_vg)
 
         t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
+        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"] + [0, 0, 0]
 
         n = len(t)
         n0 = (n - 1) // 3
@@ -426,14 +427,15 @@ class Fig7to9(Scene):
         #self.add_t_t12(t)
 
         # Fig 8
-        #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
-        #self.add_t_t12(t)
-        #self.sort(3.33, 7)
+        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
+        self.add_t_t12(t)
+        self.sort(3.33, 7)
 
         # Fig 9
-        t = [3, 3, 4, 1, 4, 5, 2]
-        self.add_t_t12(t)
-        self.sort(1.3, 7)
+        #t = [3, 3, 4, 1, 4, 5, 2]
+        #self.add_t_t12(t)
+        #self.sort(1.3, 7)
 
     def add_t_t12(self, t):
         square_size = 0.8
@@ -632,7 +634,7 @@ class Fig7to9(Scene):
 class Fig10and11and13(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        t = [3, 3, 4, 1, 4, 5, 2]
+        t = [4, 4, 3, 1, 3, 2, 5]
         # Fig 10
         #self.add_t_t12(t)
 
@@ -642,6 +644,7 @@ class Fig10and11and13(Scene):
 
         # Fig 13
         t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
+        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
         self.add_t_t12(t)
         self.sort()
 
@@ -784,8 +787,9 @@ class Fig12(Scene):
         self.camera.background_color = WHITE
 
         # Fig 12
-        t = [3, 3, 4, 1, 4, 5, 2] + [0, 0, 0]
+        #t = [4, 4, 3, 1, 3, 2, 5] + [0, 0, 0]
         t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
+        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"] + [0, 0, 0]
         self.add_base(t)
         #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
 
