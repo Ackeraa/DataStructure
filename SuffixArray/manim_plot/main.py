@@ -172,7 +172,7 @@ class Fig3to4(Scene):
     def construct(self):
         self.camera.background_color = WHITE
 
-        self.who = "fig3"
+        self.who = "fig4"
 
         if self.who == "fig3":
             self.fig3()
@@ -209,7 +209,7 @@ class Fig3to4(Scene):
         self.node_size = 0.4
         self.scale = 0.4
         self.gap = 1.5
-        text = "abcabcacab$"
+        text = "cbacbacacb$"
         self.texts = [ text[i:] for i in range(len(text))]
         vg = VGroup()
         for txt in self.texts:
@@ -311,7 +311,7 @@ class Fig3to4(Scene):
 class Fig5(Scene):
     def construct(self):
         self.camera.background_color = WHITE
-        text = "abcabcacab"
+        text = "cbacbacacb"
         #text = Text(t, color=BLACK, font="DroidSansMono Nerd Font", font_size=30)
         t0 = Array([t for t in text])
         t0.shift(UP * 3.3)
@@ -371,7 +371,6 @@ class Fig6(Scene):
 
         self.add(titles_vg)
 
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
         t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"] + [0, 0, 0]
 
         n = len(t)
@@ -427,19 +426,20 @@ class Fig7to9(Scene):
         #self.add_t_t12(t)
 
         # Fig 8
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
-        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
-        self.add_t_t12(t)
-        self.sort(3.33, 7)
+        #t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
+        #titles = 
+        #self.add_t_t12(t)
+        #self.sort(3.33, 7)
 
         # Fig 9
-        #t = [3, 3, 4, 1, 4, 5, 2]
-        #self.add_t_t12(t)
-        #self.sort(1.3, 7)
+        t = [3, 3, 4, 1, 4, 5, 2]
+        self.add_t_t12(t)
+        self.sort(1.3, 7)
 
     def add_t_t12(self, t):
         square_size = 0.8
-        titles = ["id", "T", "T_{12}"]
+        #titles = ["id", "T", "T_{12}"]
+        titles = ["id", "T'", "T'_{12}"]
         titles_vg = VGroup()
         for title in titles:
             title_tex = MathTex(title, font_size=24, color=BLACK)
@@ -467,7 +467,7 @@ class Fig7to9(Scene):
             elif i < 3 * n2:
                 ids[i][0].set_fill(BLUE, opacity=1)
 
-        tt = Array(t, square_size=square_size, color=DARK_BROWN)
+        tt = Array(t, square_size=square_size, color=BLACK)
 
         t1 = [i * 3 + 1 for i in range(n1)]
         t2 = [i * 3 + 2 for i in range(n2)]
@@ -565,7 +565,7 @@ class Fig7to9(Scene):
                 self.play(nums[i].animate.move_to(nums0[i]))
             anims = []
             for num in nums:
-                anims.append(num[j].animate.set(color=DARK_BROWN))
+                anims.append(num[j].animate.set(color=BLACK))
             self.play(*anims)
         
         rk = [1 for _ in range(len(nums))]
@@ -593,7 +593,8 @@ class Fig7to9(Scene):
 
         self.play(FadeOut(buckets))
 
-        sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
+        #sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
+        sa12_tex = MathTex("SA'_{12}", font_size=24, color=BLACK)
         sa12_box = Square(0.8, color=WHITE)
         sa12_tex.move_to(sa12_box.get_center())
         sa12_title = VGroup(sa12_tex, sa12_box).scale(0.8)
@@ -606,7 +607,8 @@ class Fig7to9(Scene):
         sa12_content.next_to(sa12_title, RIGHT, buff=0.1)
         sa12_vg = VGroup(sa12_title, sa12_content)
 
-        r12_tex = MathTex("R_{12}", font_size=24, color=BLACK)
+        #r12_tex = MathTex("R_{12}", font_size=24, color=BLACK)
+        r12_tex = MathTex("R'_{12}", font_size=24, color=BLACK)
         r12_box = Square(0.8, color=WHITE)
         r12_tex.move_to(r12_box.get_center())
         r12_title = VGroup(r12_tex, r12_box).scale(0.8)
@@ -643,7 +645,6 @@ class Fig10and11and13(Scene):
         #self.sort()
 
         # Fig 13
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"]
         t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
         self.add_t_t12(t)
         self.sort()
@@ -651,6 +652,7 @@ class Fig10and11and13(Scene):
     def add_t_t12(self, t):
         square_size = 0.8
         titles = ["id", "T", "T_0", "T_{12}", "SA_{12}", "R_{12}"]
+        #titles = ["id", "T'", "T'_0", "T'_{12}", "SA'_{12}", "R'_{12}"]
         titles_vg = VGroup()
         for title in titles:
             title_tex = MathTex(title, font_size=24, color=BLACK)
@@ -670,7 +672,7 @@ class Fig10and11and13(Scene):
         n12 = n1 + n2
 
         ids = Array([i for i in range(n)], square_size=square_size)
-        tt = Array(t, square_size=square_size, color=DARK_BROWN)
+        tt = Array(t, square_size=square_size, color=BLACK)
         for i in range(len(t)):
             if i < 3 * n0 and i % 3 == 0:
                 ids[i][0].set_fill(PURPLE, opacity=1)
@@ -771,6 +773,7 @@ class Fig10and11and13(Scene):
         self.wait()
 
         title0 = MathTex("SA_0", font_size=24, color=BLACK)
+        #title0 = MathTex("SA'_0", font_size=24, color=BLACK)
         saa0 = Array(sa0, color=BLACK, square_size=0.8)
         for x in saa0:
             x[0].set_fill(PURPLE, opacity=1)
@@ -782,21 +785,22 @@ class Fig10and11and13(Scene):
 
         self.wait()
 
-class Fig12(Scene):
+class Fig12and14(Scene):
     def construct(self):
         self.camera.background_color = WHITE
 
         # Fig 12
-        #t = [4, 4, 3, 1, 3, 2, 5] + [0, 0, 0]
-        t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
-        t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"] + [0, 0, 0]
+        t = [4, 4, 3, 1, 3, 2, 5] + [0, 0, 0]
         self.add_base(t)
-        #t = [ord(x) - ord('a') + 1 for x in "abcabcacab"] + [0, 0, 0]
+        # Fig 14
+        #t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"] + [0, 0, 0]
+        #self.add_base(t)
 
     def add_base(self, t):
         square_size=0.6
 
-        titles = ["id", "T", "SA_0", "SA_{12}", "R_{12}", "SA"]
+        #titles = ["id", "T", "SA_0", "SA_{12}", "R_{12}", "SA"]
+        titles = ["id", "T'", "SA'_0", "SA'_{12}", "R'_{12}", "SA'"]
         titles_vg = VGroup()
         for title in titles:
             title_tex = MathTex(title, font_size=24, color=BLACK)
@@ -816,7 +820,7 @@ class Fig12(Scene):
         n2 = (n - 2) // 3
         n12 = n1 + n2
 
-        tt = Array(t, square_size=square_size, color=DARK_BROWN)
+        tt = Array(t, square_size=square_size, color=BLACK)
 
         ids = Array([i for i in range(n)], square_size=square_size)
         for i in range(len(t)):
@@ -894,7 +898,8 @@ class Fig12(Scene):
         self.add(ari, arj)
 
         # 1
-        t1_1_title = Info("T[a]", color=BLACK)
+        #t1_1_title = Info("T[a]", color=BLACK)
+        t1_1_title = Info("T'[a]", color=BLACK)
         t1_1_title.move_to(RIGHT * 4.5 + UP * 2.5)
         t1_1_value = Info()
         t1_1_value.next_to(t1_1_title, DOWN, buff=0)
@@ -902,7 +907,8 @@ class Fig12(Scene):
         cmp1 = Info()
         cmp1.next_to(t1_1_title, RIGHT, buff=0.2)
 
-        t2_1_title = Info("T[b]", color=BLACK)
+        #t2_1_title = Info("T[b]", color=BLACK)
+        t2_1_title = Info("T'[b]", color=BLACK)
         t2_1_value = Info()
         t2_1_title.next_to(t1_1_title, RIGHT, buff=1)
         t2_1_value.next_to(t2_1_title, DOWN, buff=0)
@@ -964,8 +970,10 @@ class Fig12(Scene):
                 self.play(cmp1.animate.update_text("="))
                 self.wait(0.8)
 
-                self.play(t1_2_title.animate.update_text("R_{12}[a+1]"),
-                          t2_2_title.animate.update_text("R_{12}[b+1]"))
+                #self.play(t1_2_title.animate.update_text("R_{12}[a+1]"),
+                #          t2_2_title.animate.update_text("R_{12}[b+1]"))
+                self.play(t1_2_title.animate.update_text("R'_{12}[a+1]"),
+                          t2_2_title.animate.update_text("R'_{12}[b+1]"))
 
                 self.play(Indicate(rr12[(a + 1) // 3][0], color=RED),
                           Indicate(rr12[n1 + (b + 1) // 3][0], color=RED))
@@ -988,8 +996,10 @@ class Fig12(Scene):
                 self.play(cmp1.animate.update_text("="))
                 self.wait(0.8)
 
-                self.play(t1_2_title.animate.update_text("T[a+1]"),
-                            t2_2_title.animate.update_text("T[b+1]"))
+                #self.play(t1_2_title.animate.update_text("T[a+1]"),
+                #            t2_2_title.animate.update_text("T[b+1]"))
+                self.play(t1_2_title.animate.update_text("T'[a+1]"),
+                            t2_2_title.animate.update_text("T'[b+1]"))
 
                 self.play(Indicate(tt[a + 1][0], color=RED),
                           Indicate(tt[b + 1][0], color=RED))
@@ -1010,8 +1020,10 @@ class Fig12(Scene):
                 else:
                     self.play(cmp2.animate.update_text("="))
                     self.wait(0.8)
-                    self.play(t1_3_title.animate.update_text("R[a+2]"),
-                            t2_3_title.animate.update_text("R[b+2]"))
+                    #self.play(t1_3_title.animate.update_text("R[a+2]"),
+                    #        t2_3_title.animate.update_text("R[b+2]"))
+                    self.play(t1_3_title.animate.update_text("R'[a+2]"),
+                            t2_3_title.animate.update_text("R'[b+2]"))
 
                     self.play(Indicate(rr12[(a + 2) // 3][0], color=RED),
                               Indicate(rr12[(b + 2) // 3][0], color=RED))
