@@ -1115,11 +1115,12 @@ class Fig15(Scene):
                 else:
                     break
             hh.append(h)
+        hh.append(0)
         saa = VGroup()
         for x in sa:
             a = Array(x, square_size=0.5)
             saa.add(a)
-        saa.arrange(DOWN, buff=0).shift(DOWN)
+        saa.arrange(DOWN, buff=0).shift(DOWN+RIGHT*0.5)
 
         rank = [0 for _ in range(n)]
         for i in range(n):
@@ -1140,30 +1141,84 @@ class Fig15(Scene):
             sq = Square(0.5).next_to(saa[i][0], LEFT, buff=0)
             id.move_to(sq.get_center())
             self.add(id)
-            if i < n - 1:
-                id1 = MathTex(str(hh[i]), color=BLACK, font_size=20)
-                sq1 = Square(0.5).next_to(sq, LEFT, buff=0)
-                id1.move_to(sq1.get_center())
-                hi.add(id1)
+            id1 = MathTex(str(hh[i]), color=BLACK, font_size=20)
+            sq1 = Square(0.5).next_to(sq, LEFT, buff=0)
+            id1.move_to(sq1.get_center())
+            hi.add(id1)
 
         title1 = MathTex("H", color=BLACK, font_size=20).next_to(hi[0], UP, buff=0.3)
         title2 = MathTex("SA", color=BLACK, font_size=20).next_to(title1, RIGHT)
-        hi.shift(DOWN*0.2)
+        #hi.shift(DOWN*0.2)
         self.add(title1, title2)
 
+        hinfo = Info().shift(LEFT*3.5+UP*2.5)
+        self.add(hinfo)
+
+
         h = 0
+        rect = self.plot_rect(n, 0.6, tt[0].get_center(), RED)
+        self.play(Create(rect))
         for i in range(n):
+            ii = rank[i]
+            rect1 = self.plot_rect(n-i, 0.5, saa[ii][0].get_center(), RED)
+            self.play(ReplacementTransform(rect, rect1))
+            
+            anims1d = []
+            anims1 = []
             if rank[i] == n - 1:
                 h = 0
-                continue
+                self.play(hinfo.animate.update_text("h=0"))
+                self.play(FadeIn(hi[ii]))
+            else:
+                k = ids[rank[i] + 1]
+                for j in range(h):
+                    anims1.append(saa[ii][j][0].animate.set_fill(RED_B, opacity=0.5))
+                    anims1.append(saa[ii+1][j][0].animate.set_fill(RED_B, opacity=0.5))
 
-            k = ids[rank[i] + 1]
-            while i + h < n and k + h < n and t[i + h] == t[k + h]:
-                h += 1
-            #height[rank[i]] = h
+                    anims1d.append(saa[ii][j][0])
+                    anims1d.append(saa[ii+1][j][0])
 
-            if h > 0:
-                h -= 1
+                if len(anims1) > 0:
+                    self.play(*anims1)
+                if h < len(saa[ii]) and h < len(saa[ii+1]):
+                    self.play(Indicate(saa[ii][h][1], color=RED),
+                              Indicate(saa[ii+1][h][1], color=RED))
+                while i + h < n and k + h < n and t[i + h] == t[k + h]:
+                    self.play(saa[ii][h][0].animate.set_fill(RED_B, opacity=0.5),
+                              saa[ii+1][h][0].animate.set_fill(RED_B, opacity=0.5),
+                               hinfo.animate.update_text("h="+str(h+1)))
+
+                    anims1d.append(saa[ii][h][0])
+                    anims1d.append(saa[ii+1][h][0])
+                    h += 1
+                    if h < len(saa[ii]) and h < len(saa[ii+1]):
+                        self.play(Indicate(saa[ii][h][1], color=RED),
+                                  Indicate(saa[ii+1][h][1], color=RED))
+
+                self.play(hinfo.animate.update_text("h="+str(h)))
+                self.play(FadeIn(hi[ii]))
+                if h > 0:
+                    h -= 1
+
+            animss = []
+            for x in anims1d:
+                animss.append(x.animate.set_fill(WHITE))
+            orect = rect
+            if i + 1 < n:
+                rect = self.plot_rect(n-i-1, 0.6, tt[i + 1].get_center(), RED)
+                animss.append(FadeOut(orect))
+                animss.append(ReplacementTransform(rect1, rect))
+                self.play(*animss)
+                self.wait(0.8)
+            else:
+                animss.append(FadeOut(orect, rect1))
+                self.play(*animss)
+
+    def plot_rect(self, width, size, pos, color):
+        rect = Rectangle(width=width*size, height=size, stroke_width=2)
+        rect.move_to([pos[0] + (width - 1)*size / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect
 
 class Fig16(Scene):
     def construct(self):
