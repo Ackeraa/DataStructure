@@ -23,7 +23,7 @@ class TrieNode(VGroup):
         self.idx = idx
         self.text = None
         self.node = Circle(size).set_color(node_color).set_fill(WHITE, opacity=1)
-        self.value = Text(str(value), color=text_color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
+        self.value = Text(value, color=text_color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
         super().__init__(self.node, self.value)
 
     def set_text(self, value, scale=0.4, split=False):
@@ -40,7 +40,8 @@ class SuffixTreeNode(VGroup):
         self.edges = {}
         self.l = l
         self.r = r
-        self.idx = int(value)
+        if value.isdigit():
+            self.idx = int(value)
         self.node = Circle(size).set_color(BLACK).set_fill(WHITE, opacity=1)
         self.value = Text(str(value), color=BLACK, font="DroidSansMono Nerd Font").scale(0.6).move_to(self.node.get_center())
         super().__init__(self.node, self.value)

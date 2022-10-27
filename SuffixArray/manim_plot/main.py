@@ -1235,7 +1235,7 @@ class Fig16(Scene):
 
         self.nodes = VGroup()
         self.edges = VGroup()
-        root = SuffixTreeNode(rt.index).move_to(self.hh[rt.index]).shift(UP*6)
+        root = SuffixTreeNode(str(rt.index)).move_to(self.hh[rt.index]).shift(UP*6)
         self.add_nodes1(rt, root)
         self.adjust_nodes(root)
         self.add_edges(root)
@@ -1247,6 +1247,7 @@ class Fig16(Scene):
 
 
         self.cnt = 0
+        self.add_nodes2(rt, root)
         self.wait()
         #root = SuffixTreeNode()
         #self.build(cartesian_tree.root, root)
@@ -1258,7 +1259,7 @@ class Fig16(Scene):
                 l = self.sa[v.index]
                 r = l + self.height[v.index]
                 c = self.t[l + node.r - node.l]
-                node.children[c] = SuffixTreeNode(v.index, l, r)
+                node.children[c] = SuffixTreeNode(str(v.index), l, r)
                 self.add_nodes1(v, node.children[c])
 
     def adjust_nodes(self, u):
@@ -1300,6 +1301,26 @@ class Fig16(Scene):
             else:
                 node.children[c] = v.copy()
                 self.fusion(v, node.children[c])
+        
+    def add_nodes2(self, u, node):
+        for v in (u.lchild, u.rchild):
+            if v is None:
+                if self.cnt == len(self.sa):
+                    break
+                l = self.sa[self.cnt]
+                r = len(self.t)
+                c = self.t[l + node.r - node.l]
+                vnode = SuffixTreeNode(f"SA[{self.cnt}]", l, r)
+                vnode.move_to([self.hh[self.cnt].get_center()[0], node.node.get_center()[1] - 0.8, 0])
+                self.play(FadeIn(vnode))
+                print(1)
+                node.children[c] = vnode
+                self.cnt += 1
+            else:
+                l = self.sa[v.index]
+                r = l + self.height[v.index]
+                c = self.t[l + node.r - node.l]
+                self.add_nodes2(v, node.children[c])
 
     def build(self, u, node):
         for v in (u.lchild, u.rchild):
@@ -1320,7 +1341,6 @@ class Fig16(Scene):
                 c = self.t[l + node.r - node.l]
                 node.children[c] = SuffixTreeNode(l, r)
                 self.build(v, node.children[c])
-
 
 class BuildSuffixArray(Scene):
     def construct(self):
