@@ -13,6 +13,14 @@ class Array(VGroup):
             self.add(VGroup(sq, txt))
         self.arrange(RIGHT, buff=0)
 
+class Title(VGroup):
+    def __init__(self, title, square_size=0.6, color=BLACK):
+        super().__init__()
+        title_tex = MathTex(title, font_size=24, color=BLACK)
+        title_box = Square(square_size, color=WHITE)
+        title_tex.move_to(title_box.get_center())
+        self.add(title_box, title_tex)
+
 class TrieNode(VGroup):
     
     def __init__(self, value="", idx=0, size=0.3, scale=0.6, node_color=BLACK, text_color=BLACK):

@@ -433,7 +433,6 @@ class Fig7to9(Scene):
 
         # Fig 8
         #t = [ord(x) - ord('a') + 1 for x in "cbacbacacb"]
-        #titles = 
         #self.add_t_t12(t)
         #self.sort(3.33, 7)
 
