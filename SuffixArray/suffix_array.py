@@ -91,7 +91,7 @@ class SuffixArray:
         while i < n0 and j < n12:
             a = sa0[i]
             b = sa12[j]
-            if (b % 3 == 0 and t[a] < t[b]) or \
+            if (t[a] < t[b]) or \
                (b % 3 == 1 and (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3])) or \
                (b % 3 == 2 and (t[a], t[a + 1], r12[n1 + (a + 2) // 3]) < (t[b], t[b + 1], r12[(b + 2) // 3])):
 
@@ -137,7 +137,8 @@ class SuffixArray:
         return self.height[i] if j == i else self.fischer_heun.rmq(i, j - 1)
 
 if __name__ == '__main__':
-    text = "abcabcacab"
+    text = "cbacbacacb"
     suffix_array = SuffixArray(text)
+    print(suffix_array.sa)
     print(suffix_array.height)
     print(suffix_array.lcp(0, 2))
