@@ -30,21 +30,46 @@ class TrieNode(VGroup):
         color = self.value.color
         super().remove(self.value)
         if split and len(value) > 3:
-            value = value[:4] + "\n" + (len(value) - 4) // 2 * " " + value[4:]
+            value = value[:4] + "\n" + (len(value) - 4) // 2 * "\\ " + value[4:]
         self.value = Text(value, color=color, font="DroidSansMono Nerd Font").scale(scale).move_to(self.node.get_center())
         super().add(self.value)
 
 class SuffixTreeNode(VGroup):
-    def __init__(self, value="0", l=0, r=0, size=0.3):
+    def __init__(self, val="0", l=0, r=0, size=0.35, scale=1):
         self.children = {} # could use hash table to get linear time.
         self.edges = {}
         self.l = l
         self.r = r
+        value = ""
+        for x in val:
+            if x != "$":
+                value += x
+            else:
+                value += "\$"
         if value.isdigit():
             self.idx = int(value)
         self.node = Circle(size).set_color(BLACK).set_fill(WHITE, opacity=1)
-        self.value = Text(str(value), color=BLACK, font="DroidSansMono Nerd Font").scale(0.6).move_to(self.node.get_center())
+        if value == "":
+            self.value = MathTex("*", color=WHITE, font_size=22).scale(scale).move_to(self.node.get_center())
+        else:
+            self.value = MathTex(str(value), color=BLACK, font_size=22).scale(scale).move_to(self.node.get_center())
         super().__init__(self.node, self.value)
+
+
+    def set_text(self, val, scale=0.9, split=True):
+        super().remove(self.value)
+        value = ""
+        for x in val:
+            if x != "$":
+                value += x
+            else:
+                value += "\$"
+        if value == "":
+            self.value = MathTex("*", color=WHITE, font_size=22).scale(scale).move_to(self.node.get_center())
+        else:
+            self.value = MathTex(str(value), color=BLACK, font_size=22).scale(scale).move_to(self.node.get_center())
+        super().__init__(self.node, self.value)
+        super().add(self.value)
 
     def add_edge(self, v):
         p1 = self.node.get_center()
