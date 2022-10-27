@@ -335,8 +335,9 @@ class Fig5(Scene):
         self.add(t1)
 
         for i in range(len(text)):
-            id = Text(str(i), color=BLACK, font="DroidSansMono Nerd Font", font_size=24)
-            id.next_to(t1[i][0], LEFT, buff=0.2)
+            id = MathTex(str(i), color=BLACK, font_size=24)
+            sq = Square(0.6).next_to(t1[i][0], LEFT, buff=0)
+            id.move_to(sq.get_center())
             self.add(id)
 
         title2 = Text("后缀数组", color=BLUE_E, font="DroidSansMono Nerd Font", font_size=24)
@@ -356,8 +357,9 @@ class Fig5(Scene):
         self.add(t2)
 
         for i in range(len(text)):
-            id = Text(str(ids[i]), color=BLACK, font="DroidSansMono Nerd Font", font_size=24)
-            id.next_to(t2[i][0], LEFT, buff=0.2)
+            id = MathTex(str(ids[i]), color=BLACK, font_size=24)
+            sq = Square(0.6).next_to(t2[i][0], LEFT, buff=0)
+            id.move_to(sq.get_center())
             self.add(id)
 
 class Fig6(Scene):
@@ -1087,8 +1089,82 @@ class Fig12and14(Scene):
                     cmp3.animate.update_text()
             )
 
+class Fig15(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
+        t = "cbacbacacb"
+        n = len(t)
 
+        tt = Array([x for x in t], square_size=0.6)
+        tt.shift(UP*3.5)
+        id = MathTex("T", color=BLACK, font_size=20)
+        sq = Square(0.5).next_to(tt, LEFT, buff=0)
+        id.move_to(sq.get_center())
+        self.add(id, tt)
+
+        sa = [t[i:] for i in range(n)]
+        ids = sorted(range(n), key=sa.__getitem__)
+        sa.sort()
         
+        hh = []
+        for i in range(n-1):
+            h = 0
+            for j in range(min(len(sa[i]), len(sa[i+1]))):
+                if sa[i][j] == sa[i+1][j]:
+                    h += 1
+                else:
+                    break
+            hh.append(h)
+        saa = VGroup()
+        for x in sa:
+            a = Array(x, square_size=0.5)
+            saa.add(a)
+        saa.arrange(DOWN, buff=0).shift(DOWN)
+
+        rank = [0 for _ in range(n)]
+        for i in range(n):
+            rank[ids[i]] = i
+        rr = Array(rank, square_size=0.6).shift(UP*2.5)
+        id = MathTex("R", color=BLACK, font_size=20)
+        sq = Square(0.5).next_to(rr, LEFT, buff=0)
+        id.move_to(sq.get_center())
+        self.add(id, rr)
+
+        for a in saa:
+            a.shift((n - len(a)) / 4 * LEFT)
+        self.add(saa)
+        
+        hi = VGroup()
+        for i in range(n):
+            id = MathTex(str(ids[i]), color=BLACK, font_size=20)
+            sq = Square(0.5).next_to(saa[i][0], LEFT, buff=0)
+            id.move_to(sq.get_center())
+            self.add(id)
+            if i < n - 1:
+                id1 = MathTex(str(hh[i]), color=BLACK, font_size=20)
+                sq1 = Square(0.5).next_to(sq, LEFT, buff=0)
+                id1.move_to(sq1.get_center())
+                hi.add(id1)
+
+        title1 = MathTex("H", color=BLACK, font_size=20).next_to(hi[0], UP, buff=0.3)
+        title2 = MathTex("SA", color=BLACK, font_size=20).next_to(title1, RIGHT)
+        hi.shift(DOWN*0.2)
+        self.add(title1, title2)
+
+        h = 0
+        for i in range(n):
+            if rank[i] == n - 1:
+                h = 0
+                continue
+
+            k = ids[rank[i] + 1]
+            while i + h < n and k + h < n and t[i + h] == t[k + h]:
+                h += 1
+            #height[rank[i]] = h
+
+            if h > 0:
+                h -= 1
+
 class Fig16(Scene):
     def construct(self):
         self.camera.background_color = WHITE
