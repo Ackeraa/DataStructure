@@ -13,6 +13,16 @@ class Array(VGroup):
             self.add(VGroup(sq, txt))
         self.arrange(RIGHT, buff=0)
 
+    def lmove_to(self, x):
+        pos = x[0].get_center()
+        cp = self.copy()
+        for i in range(len(cp)):
+            if i == 0:
+                cp[i].move_to(pos)
+            else:
+                cp[i].next_to(cp[i - 1], RIGHT, buff=0)
+        return self.move_to(cp)
+
 class Title(VGroup):
     def __init__(self, title, square_size=0.6, color=BLACK):
         super().__init__()
