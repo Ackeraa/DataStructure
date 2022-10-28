@@ -8,6 +8,7 @@ from suffix_array import SuffixArray
 class SuffixArray(Scene):
     def construct(self):
         self.camera.background_color = WHITE
+        self.add_sound("bgm.mp3")
         self.t = list("cbacbacacb")
         t = [ord(x) - ord('a') + 1 for x in self.t]
         self.start()
@@ -76,6 +77,12 @@ class SuffixArray(Scene):
         self.play(Create(t))
         self.wait(1.5)
 
+    def plot_rect(self, width, size, pos, color):
+        rect = Rectangle(width=width*size, height=size, stroke_width=2)
+        rect.move_to([pos[0] + (width - 1)*size / 2, pos[1], pos[2]])
+        rect.set_stroke(color)
+        return rect
+
     def build(self, t, N, dep=0):
         if dep == 0:
             titles_map = {
@@ -123,7 +130,8 @@ class SuffixArray(Scene):
         for i in range(n2):
             tt12[n1 + i][0].set_fill(BLUE, opacity=1)
 
-        self.play(FadeOut(self.tt), FadeIn(tt[:-3]), FadeIn(tt[-3:]))
+        self.play(FadeOut(self.tt), FadeIn(tt[:-3]))
+        self.play(FadeIn(tt[-3:]))
 
         idd.next_to(tt, UP, buff=0)
         id_title = Title("id").next_to(idd, LEFT, buff=0.2)
@@ -257,11 +265,11 @@ class SuffixArray(Scene):
         saa12.next_to(sa12_title, RIGHT, buff=0.2)
         sa12_vg = VGroup(sa12_title, saa12)
 
-        a = [0 for _ in range(len(nums))]
+        a1 = [0 for _ in range(len(nums))]
         for i in range(len(nums)):
-            a[ords[i]] = rk[i]
+            a1[ords[i]] = rk[i]
         r12_title = Title(titles_map["r12"]).next_to(sa12_title, DOWN, buff=0.5)
-        rr12 = Array(a)
+        rr12 = Array(a1)
         rr12.next_to(r12_title, RIGHT, buff=0.2)
         r12_vg = VGroup(r12_title, rr12)
 
@@ -322,8 +330,13 @@ class SuffixArray(Scene):
                 else:
                     saa12_copy[i][0].set_fill(color=BLUE, opacity=1)
 
+            rect1 = self.plot_rect(n12, square_size, saa12[0].get_center(), RED)
+            rect2 = self.plot_rect(n12, square_size, rr12[0].get_center(), RED)
+            self.play(Create(rect1), Create(rect2))
+            
             self.play(ReplacementTransform(rr12, rr12_copy),
                       ReplacementTransform(saa12, saa12_copy))
+            self.play(FadeOut(rect1, rect2))
             self.remove(rr12_copy, saa12_copy)
         
         # sa0 animation
@@ -683,6 +696,4 @@ class SuffixArray(Scene):
             for i in ids:
                 a[num] = i
                 num += 1
-
-        self.wait()
 
