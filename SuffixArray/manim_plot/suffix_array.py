@@ -23,10 +23,10 @@ class SuffixArray(Scene):
     def start(self):
         self.tt = Array(self.t)
         self.add(self.tt)
-        self.play(self.tt.animate.shift(UP * 3+LEFT*0.6*1.5))
+        self.play(self.tt.animate.shift(UP*2.5+LEFT*0.6*1.5))
 
-        title1 = Text("所有后缀", color=BLUE_E, font="DroidSansMono Nerd Font", font_size=24)
-        title1.shift(UP * 2.1 + LEFT * 4)
+        title1 = Text("所有后缀", color=BLUE_E, font_size=24)
+        title1.shift(UP * 1.8 + LEFT * 4)
     
         t1 = VGroup()
         for i in range(len(self.t)):
@@ -43,8 +43,8 @@ class SuffixArray(Scene):
             id.move_to(sq.get_center())
             idd1.add(id)
 
-        title2 = Text("后缀数组", color=BLUE_E, font="DroidSansMono Nerd Font", font_size=24)
-        title2.shift(UP * 2.1 + RIGHT * 4)
+        title2 = Text("后缀数组", color=BLUE_E, font_size=24)
+        title2.shift(UP * 1.8 + RIGHT * 4)
 
         texts = [self.t[i:] for i in range(len(self.t))]
         ids = sorted(range(len(texts)), key=texts.__getitem__)
@@ -73,182 +73,21 @@ class SuffixArray(Scene):
         t = [ord(x) - ord('a') + 1 for x in self.t]
         tt = Array(t).move_to(self.tt)
         self.play(ReplacementTransform(self.tt, tt))
-
-    def create_basic(self, t):
-        t += [0, 0, 0]
-        n = len(t)
-        n0 = (n - 1) // 3
-        n1 = (n - 1) // 3
-        n2 = (n - 2) // 3
-        n12 = n1 + n2
-        t0 = [i * 3 for i in range(n0)]
-        t1 = [i * 3 + 1 for i in range(n1)]
-        t2 = [i * 3 + 2 for i in range(n2)]
-        t12 = t1 + t2
-
-        self.idd = Array([i for i in range(n)], square_size=square_size)
-        for i in range(len(t)):
-            if i < 3 * n0 and i % 3 == 0:
-                self.idd[i][0].set_fill(PURPLE, opacity=1)
-            elif i < 3 * n1 and i % 3 == 1:
-                self.idd[i][0].set_fill(TEAL, opacity=1)
-            elif i < 3 * n2:
-                self.idd[i][0].set_fill(BLUE, opacity=1)
-
-        self.tt = Array(t, square_size=square_size, color=BLACK)
-
-        self.tt12 = Array(t12, square_size=square_size)
-        for i in range(n1):
-            self.tt12[i][0].set_fill(TEAL, opacity=1)
-        for i in range(n2):
-            self.tt12[n1 + i][0].set_fill(BLUE, opacity=1)
-
-    def sort(self, l_offset, n):
-        vg = VGroup(self.titles_vg, self.ids, self.tt, self.tt12)
-        vg.shift(UP * 1.5).scale(0.8)
-        self.tt12.shift(UP * 0.5)
-        self.titles_vg[2].shift(UP * 0.5)
-
-        t = VGroup()
-        for i in self.t12:
-            t.add(self.tt[i:i+3].copy())
-
-        for i in range(len(t)):
-            if i == 0:
-                self.play(t[i].animate.shift(DOWN * 5.8 + LEFT * l_offset).scale(0.8))
-            else:
-                self.play(t[i].animate.next_to(t[i - 1], buff=0.2).scale(0.8))
-
-        nums = VGroup()
-        for x in t:
-            num = VGroup()
-            for y in x:
-                num.add(y[1].copy().scale(1.5))
-            num.arrange(RIGHT, buff=0.1)
-            nums.add(num)
-        nums.arrange(RIGHT, buff=0.4).shift(DOWN * 2)
-
-        anims = []
-        for i in range(len(t)):
-            anims.append(ReplacementTransform(t[i].copy(), nums[i])) 
-
-        buckets = VGroup()
-        m = n // 2
-        for i in range(n):
-            buckets.add(Line([i - m, -1, 0], [i - m, 1, 0], color=BLACK, stroke_width=2))
-            if i < n - 1:
-                l = Line([i - m, -1, 0], [i - m + 1, -1, 0], color=BLACK, stroke_width=2)
-                x = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
-                buckets.add(l, x)
-
-        buckets.shift(DOWN * 0.3)
-        anims.append(FadeIn(buckets))
-        self.play(*anims)
-
-        nums0 = nums.copy()
-        ords = list(range(len(nums0)))
-        for j in range(2, -1, -1):
-            anims = []
-            for num in nums:
-                anims.append(num[j].animate.set(color=RED))
-            self.play(*anims)
-
-            queue_list = [[Line([i - m, -1.4, 0], [i - m + 1, -1.4, 0])] for i in range(100)]
-            for i in range(len(nums)):
-                x = int(nums[i][j].text)
-                queue_list[x].append(i)
-
-            for queue in queue_list:
-                for i in range(1, len(queue)):
-                    if i == 1:
-                        pre = queue[i - 1]
-                    else:
-                        pre = nums[queue[i - 1]]
-                    self.play(nums[queue[i]].animate.next_to(pre, UP, buff=0.2))
-
-            cnt = 0
-            nums1 = nums.copy()
-            ordso = ords.copy()
-            for queue in queue_list:
-                for i in queue[1:]:
-                    nums1[cnt] = nums[i]
-                    ords[cnt] = ordso[i]
-                    cnt += 1
-            nums = nums1
-
-            for i in range(len(nums)):
-                self.play(nums[i].animate.move_to(nums0[i]))
-            anims = []
-            for num in nums:
-                anims.append(num[j].animate.set(color=BLACK))
-            self.play(*anims)
-        
-        rk = [1 for _ in range(len(nums))]
-        cnt = 1
-        for i in range(1, len(nums)):
-            if (nums[i][0].text, nums[i][1].text, nums[i][2].text) !=\
-               (nums[i - 1][0].text, nums[i - 1][1].text, nums[i - 1][2].text):
-                cnt += 1
-            rk[i] = cnt
-
-        rkt = VGroup()
-        for i in range(len(nums)):
-            txt = Text(str(rk[i]), color=RED, font="DroidSansMono Nerd Font", font_size=16)
-            txt.next_to(nums0[i], DOWN, buff=0.2)
-            rkt.add(txt)
-        for i in range(len(nums)):
-            self.play(FadeIn(rkt[i], run_time=0.7))
-
-        rkt1 = rkt.copy()
-        for i in range(len(nums)):
-            rkt1[i].next_to(t[ords[i]], UP, buff=0.2)
-
-        for i in range(len(nums)):
-            self.play(ReplacementTransform(VGroup(nums[i], rkt[i]), rkt1[i]))
-
-        self.play(FadeOut(buckets))
-
-        #sa12_tex = MathTex("SA_{12}", font_size=24, color=BLACK)
-        sa12_tex = MathTex("SA'_{12}", font_size=24, color=BLACK)
-        sa12_box = Square(0.8, color=WHITE)
-        sa12_tex.move_to(sa12_box.get_center())
-        sa12_title = VGroup(sa12_tex, sa12_box).scale(0.8)
-        sa12_title.next_to(self.titles_vg[-1], DOWN, buff=0.3)
-
-        a = [0 for _ in range(len(nums))]
-        for i in range(len(nums)):
-            a[i] = self.t12[ords[i]]
-        sa12_content = Array(a, square_size=0.8).scale(0.8)
-        sa12_content.next_to(sa12_title, RIGHT, buff=0.1)
-        sa12_vg = VGroup(sa12_title, sa12_content)
-
-        #r12_tex = MathTex("R_{12}", font_size=24, color=BLACK)
-        r12_tex = MathTex("R'_{12}", font_size=24, color=BLACK)
-        r12_box = Square(0.8, color=WHITE)
-        r12_tex.move_to(r12_box.get_center())
-        r12_title = VGroup(r12_tex, r12_box).scale(0.8)
-        r12_title.next_to(sa12_title, DOWN, buff=0.3)
-
-        a = [0 for _ in range(len(nums))]
-        for i in range(len(nums)):
-            a[ords[i]] = rk[i]
-        r12_content = Array(a, square_size=0.8).scale(0.8)
-        r12_content.next_to(r12_title, RIGHT, buff=0.1)
-        r12_vg = VGroup(r12_title, r12_content)
-
-        self.play(ReplacementTransform(rkt1.copy(), r12_vg))
-
-        for i in range(len(nums)):
-            if a[i] % 3 == 1:
-                sa12_content[i][0].set_fill(color=TEAL, opacity=1)
-            else:
-                sa12_content[i][0].set_fill(color=BLUE, opacity=1)
-
-        self.play(FadeIn(sa12_vg))
-
-        self.wait()
+        self.tt = tt
 
     def build(self, t, N, dep=0):
+        if dep == 0:
+            titles_map = {
+                "t": "T", "t12": "T_{12}", "t0": "T_0", 
+                "r0": "R_0", "r12": "R_{12}", "sa0": "SA_0",
+                "sa12": "SA_{12}", "sa": "SA",
+            }
+        else:
+            titles_map = {
+                "t": "T'", "t12": "T'_{12}", "t0": "T'_0", 
+                "r0": "R'_0", "r12": "R'_{12}", "sa0": "SA'_0",
+                "sa12": "SA'_{12}", "sa": "SA'"
+            }
         square_size=0.6
         t += [0, 0, 0]
         n = len(t)
@@ -274,8 +113,8 @@ class SuffixArray(Scene):
             elif i < 3 * n2:
                 idd[i][0].set_fill(BLUE, opacity=1)
 
-        tt = Array(t, square_size=square_size, color=BLACK)
-        tt.shift(UP*3)
+        tt = Array(t, square_size=square_size)
+        tt.shift(UP*2.5)
 
         tt12 = Array(t12, square_size=square_size)
         for i in range(n1):
@@ -283,17 +122,14 @@ class SuffixArray(Scene):
         for i in range(n2):
             tt12[n1 + i][0].set_fill(BLUE, opacity=1)
 
-        self.play(FadeIn(tt[:-3]))
-        self.play(FadeIn(tt[-3:]))
-        if dep == 0:
-            self.remove(self.tt)
+        self.play(FadeOut(self.tt), FadeIn(tt[:-3]), FadeIn(tt[-3:]))
 
         idd.next_to(tt, UP, buff=0)
         id_title = Title("id").next_to(idd, LEFT, buff=0.2)
 
-        t_title = Title("T").next_to(tt, LEFT, buff=0.2)
+        t_title = Title(titles_map["t"]).next_to(tt, LEFT, buff=0.2)
 
-        t12_title = Title("T_{12}").next_to(t_title, DOWN, buff=0.5)
+        t12_title = Title(titles_map["t12"]).next_to(t_title, DOWN, buff=0.5)
         tt12.next_to(t12_title, RIGHT, buff=0.2)
 
         self.play(FadeIn(idd, id_title, t_title, t12_title))
@@ -301,6 +137,12 @@ class SuffixArray(Scene):
             self.play(ReplacementTransform(idd[t12[i]].copy(), tt12[i]))
 
         # sort plot
+        if dep == 1:
+            l_offset = 1.3
+            n_buckets = 7
+        else:
+            l_offset = 3.33
+            n_buckets = 7
         t_ = VGroup()
         for i in t12:
             t_.add(tt[i:i+3].copy())
@@ -309,7 +151,7 @@ class SuffixArray(Scene):
             if i == 0:
                 self.play(t_[i].animate.shift(DOWN * 5.8 + LEFT * l_offset).scale(0.8))
             else:
-                self.play(t_[i].animate.next_to(t[i - 1], buff=0.2).scale(0.8))
+                self.play(t_[i].animate.next_to(t_[i - 1], buff=0.2).scale(0.8))
 
         nums = VGroup()
         for x in t_:
@@ -321,14 +163,14 @@ class SuffixArray(Scene):
         nums.arrange(RIGHT, buff=0.4).shift(DOWN * 2)
 
         anims = []
-        for i in range(len(t)):
+        for i in range(len(t_)):
             anims.append(ReplacementTransform(t_[i].copy(), nums[i])) 
 
         buckets = VGroup()
-        m = n // 2
-        for i in range(n):
+        m = n_buckets // 2
+        for i in range(n_buckets):
             buckets.add(Line([i - m, -1, 0], [i - m, 1, 0], color=BLACK, stroke_width=2))
-            if i < n - 1:
+            if i < n_buckets - 1:
                 l = Line([i - m, -1, 0], [i - m + 1, -1, 0], color=BLACK, stroke_width=2)
                 x = Text(str(i), font_size=16, color=BLACK).next_to(l, DOWN, buff=0.1)
                 buckets.add(l, x)
@@ -393,7 +235,7 @@ class SuffixArray(Scene):
 
         rkt1 = rkt.copy()
         for i in range(len(nums)):
-            rkt1[i].next_to(t[ords[i]], UP, buff=0.2)
+            rkt1[i].next_to(t_[ords[i]], UP, buff=0.2)
 
         for i in range(len(nums)):
             self.play(ReplacementTransform(VGroup(nums[i], rkt[i]), rkt1[i]))
@@ -403,15 +245,15 @@ class SuffixArray(Scene):
         a = [0 for _ in range(len(nums))]
         for i in range(len(nums)):
             a[i] = t12[ords[i]]
-        sa12_ttile = Title("SA_{12}").next_to(t12_title, DOWN, buff=0.5)
+        sa12_title = Title(titles_map["sa12"]).next_to(t12_title, DOWN, buff=0.5)
         saa12 = Array(a)
-        sa12.next_to(sa12_title, RIGHT, buff=0.2)
+        saa12.next_to(sa12_title, RIGHT, buff=0.2)
         sa12_vg = VGroup(sa12_title, saa12)
 
         a = [0 for _ in range(len(nums))]
         for i in range(len(nums)):
             a[ords[i]] = rk[i]
-        r12_ttile = Title("R_{12}").next_to(sa12_title, DOWN, buff=0.5)
+        r12_title = Title(titles_map["r12"]).next_to(sa12_title, DOWN, buff=0.5)
         rr12 = Array(a)
         rr12.next_to(r12_title, RIGHT, buff=0.2)
         r12_vg = VGroup(r12_title, rr12)
@@ -425,8 +267,6 @@ class SuffixArray(Scene):
                 saa12[i][0].set_fill(color=BLUE, opacity=1)
 
         self.play(FadeIn(sa12_vg))
-
-        self.wait()
 
         # sort sa12
         self.radix_sort(t[2:], sa12, N)
@@ -445,9 +285,12 @@ class SuffixArray(Scene):
             else:
                 r12[n1 + (i - 2) // 3] = num
 
-        return
         # recursive build if r12 contains same order
         if num < n12:
+            self.play(FadeOut(tt, idd, tt12, saa12, t_, rkt1,
+                              id_title, t_title, t12_title, sa12_title, r12_title),
+                              rr12.animate.move_to(tt[:len(rr12)]))
+            self.tt = rr12
             sa12 = self.build(r12, n12)
             # recover to the right order
             for i in range(n12):
@@ -456,10 +299,274 @@ class SuffixArray(Scene):
                     sa12[i] = sa12[i] * 3 + 1
                 else:
                     sa12[i] = (sa12[i] - n1) * 3 + 2
+        
+        # sa0 animation
+        tt0 = Array(t0, square_size=square_size)
+        for i in range(n0):
+            tt0[i][0].set_fill(PURPLE, opacity=1)
+        t0_title = Title(titles_map["t0"]).next_to(t_title, DOWN, buff=0.5)
+        tt0.next_to(t0_title, RIGHT, buff=0.2)
+        
+        vg = VGroup(tt12, t12_title, saa12, sa12_title, rr12, r12_title)
+        self.play(vg.animate.shift(DOWN*(1+square_size)), 
+                  FadeIn(tt0, t0_title))
+
+        vg = VGroup()
+        vgg = VGroup()
+
+        vg0 = VGroup()
+        for i in t0:
+            vg0.add(tt[i].copy())
+        
+        vg1 = VGroup()
+        for i in range(n0):
+            vg1.add(rr12[i].copy())
+
+        for i in range(n0):
+            self.play(Indicate(tt[i * 3][0], color=BLACK),
+                      Indicate(tt0[i][0], color=PURPLE),
+                      Indicate(idd[i * 3][0], color=PURPLE))
+
+            if i == 0:
+                self.play(vg0[i].animate.shift(RIGHT * 6.4 + DOWN * 2.5))
+            else:
+                self.play(vg0[i].animate.next_to(vg0[i - 1], DOWN, buff=0.3))
+
+            self.play(Indicate(tt12[i][0], color=TEAL),
+                      Indicate(rr12[i][0], color=BLACK))
+
+            self.play(vg1[i].animate.next_to(vg0[i], RIGHT, buff=0))
+
+            vg.add(VGroup(vg0[i].copy(), vg1[i].copy()))
+            vgg.add(VGroup(vg0[i], vg1[i]))
+
+        # sort
+        ords = VGroup(*[MathTex(str(i), font_size=24, color=BLACK) for i in t0])
+        for i in range(n0):
+            ords[i].next_to(vgg[i], LEFT, buff=0.3)
+        self.play(FadeIn(ords))
+        self.wait()
+
+        sa0 = [i for i in t0]
+        for i in range(n0):
+            for j in range(i + 1, n0):
+                if vg[i][0][1].text + vg[i][1][1].text > vg[j][0][1].text + vg[j][1][1].text:
+                    vg[i], vg[j] = vg[j], vg[i]
+                    sa0[i], sa0[j] = sa0[j], sa0[i]
+
+        ords1 = VGroup(*[MathTex(str(i), font_size=24, color=BLACK) for i in sa0])
+        for i in range(n0):
+            ords1[i].next_to(vgg[i], LEFT, buff=0.3)
+
+        for i in range(n0):
+            vg[i].move_to(vgg[i])
+        self.play(ReplacementTransform(vgg, vg), ReplacementTransform(ords, ords1))
+        self.wait()
+
+        #title0 = MathTex("SA'_0", font_size=24, color=BLACK)
+        saa0 = Array(sa0)
+        for x in saa0:
+            x[0].set_fill(PURPLE, opacity=1)
+
+        saa0.next_to(tt0, RIGHT, buff=3.22)
+        sa0_title = Title(titles_map["sa0"]) 
+        sa0_title.next_to(saa0, LEFT, buff=0.2)
+
+        self.play(ReplacementTransform(ords.copy(), VGroup(saa0, sa0_title)))
+
+        return
 
         # sort sa0
         sa0 = [i - 1 for i in sa12 if i % 3 == 1] # first round 
         self.radix_sort(t, sa0, N) # second round 
+
+        # merge animation
+        ar = Triangle(color=RED_E).set_fill(RED, opacity=1).rotate(-180*DEGREES).scale(.03)
+        ari = VGroup(MathTex("i", font_size=20, color=BLACK), ar.copy()).arrange(DOWN, buff=0.1)
+        arj = VGroup(MathTex("j", font_size=20, color=BLACK), ar.copy()).arrange(DOWN, buff=0.1)
+
+        ari.next_to(saa0[0], UP, buff=0.1)
+        arj.next_to(saa12[0], UP, buff=0.1)
+
+        self.add(ari, arj)
+
+        # 1
+        t1_1_title = Info(titles_map["t"]+"[a]", color=BLACK)
+        t1_1_title.move_to(RIGHT * 4.5 + UP * 2.5)
+        t1_1_value = Info()
+        t1_1_value.next_to(t1_1_title, DOWN, buff=0)
+        
+        cmp1 = Info()
+        cmp1.next_to(t1_1_title, RIGHT, buff=0.2)
+
+        t2_1_title = Info(titles_map["t"]+"[b]", color=BLACK)
+        t2_1_value = Info()
+        t2_1_title.next_to(t1_1_title, RIGHT, buff=1)
+        t2_1_value.next_to(t2_1_title, DOWN, buff=0)
+
+        # 2
+        t1_2_title = Info()
+        t1_2_value = Info()
+        t1_2_title.next_to(t1_1_value, DOWN, buff=0.2)
+        t1_2_value.next_to(t1_2_title, DOWN, buff=0)
+        
+        cmp2 = Info()
+        cmp2.next_to(t1_2_title, RIGHT, buff=0.2)
+
+        t2_2_title = Info()
+        t2_2_value = Info()
+        t2_2_title.next_to(t1_2_title, RIGHT, buff=1)
+        t2_2_value.next_to(t2_2_title, DOWN, buff=0)
+
+        # 3
+        t1_3_title = Info()
+        t1_3_value = Info()
+        t1_3_title.next_to(t1_2_value, DOWN, buff=0.2)
+        t1_3_value.next_to(t1_3_title, DOWN, buff=0)
+        
+        cmp3 = Info()
+        cmp3.next_to(t1_3_title, RIGHT, buff=0.2)
+
+        t2_3_title = Info()
+        t2_3_value = Info()
+        t2_3_title.next_to(t1_3_title, RIGHT, buff=1)
+        t2_3_value.next_to(t2_3_title, DOWN, buff=0)
+
+        self.add(t1_1_title, t1_1_value, t2_1_title, t2_1_value, cmp1,
+                t1_2_title, t1_2_value, t2_2_title, t2_2_value, cmp2,
+                t1_3_title, t1_3_value, t2_3_title, t2_3_value, cmp3)
+
+        i = j = 0
+        ssa = []
+        r12 += [0, 0, 0]
+        while i < n0 and j < n12:
+            a = sa0[i]
+            b = sa12[j]
+            self.play(Indicate(tt[a][0], color=RED),
+                      Indicate(tt[b][0], color=RED))
+            self.play(t1_1_value.animate.update_text(t[a]),
+                      t2_1_value.animate.update_text(t[b]),
+                      ReplacementTransform(tt[a].copy(), t1_1_value),
+                      ReplacementTransform(tt[b].copy(), t2_1_value))
+
+            if t[a] < t[b]:
+                pd = 1
+                self.play(cmp1.animate.update_text("<"))
+                self.wait(0.8)
+            elif t[a] > t[b]:
+                pd = 0
+                self.play(cmp1.animate.update_text(">"))
+                self.wait(0.8)
+            elif b % 3 == 1:
+                self.play(cmp1.animate.update_text("="))
+                self.wait(0.8)
+
+                self.play(t1_2_title.animate.update_text(titles_map["r12"]+"[a+1]"),
+                          t2_2_title.animate.update_text(titles_map["r12"]+"[b+1]"))
+
+                self.play(Indicate(rr12[(a + 1) // 3][0], color=RED),
+                          Indicate(rr12[n1 + (b + 1) // 3][0], color=RED))
+
+
+                self.play(t1_2_value.animate.update_text(r12[(a + 1) // 3]),
+                          t2_2_value.animate.update_text(r12[n1 + (b + 1) // 3]),
+                          ReplacementTransform(rr12[(a + 1) // 3].copy(), t1_2_value),
+                          ReplacementTransform(rr12[n1 + (b + 1) // 3].copy(), t2_2_value))
+
+                if (t[a], r12[(a + 1) // 3]) < (t[b], r12[n1 + (b + 1) // 3]):
+                    pd = 1
+                    self.play(cmp2.animate.update_text("<"))
+                    self.wait(0.8)
+                else:
+                    pd = 0
+                    self.play(cmp2.animate.update_text(">"))
+                    self.wait(0.8)
+            elif b % 3 == 2:
+                self.play(cmp1.animate.update_text("="))
+                self.wait(0.8)
+
+                self.play(t1_2_title.animate.update_text(titles_map["t"]+"[a+1]"),
+                            t2_2_title.animate.update_text(titles_map["t"]+"[b+1]"))
+
+                self.play(Indicate(tt[a + 1][0], color=RED),
+                          Indicate(tt[b + 1][0], color=RED))
+
+                self.play(t1_2_value.animate.update_text(t[a+1]),
+                          t2_2_value.animate.update_text(t[b+1]),
+                          ReplacementTransform(tt[a + 1].copy(), t1_2_value),
+                          ReplacementTransform(tt[b + 1].copy(), t2_2_value))
+
+                if t[a + 1] < t[b + 1]:
+                    pd = 1
+                    self.play(cmp2.animate.update_text("<"))
+                    self.wait(0.8)
+                elif t[a + 2] < t[b + 2]:
+                    pd = 0
+                    self.play(cmp2.animate.update_text(">"))
+                    self.wait(0.8)
+                else:
+                    self.play(cmp2.animate.update_text("="))
+                    self.wait(0.8)
+                    self.play(t1_3_title.animate.update_text(titles_map["r"]+"[a+2]"),
+                            t2_3_title.animate.update_text(titles_map["r"]+"[b+2]"))
+
+                    self.play(Indicate(rr12[(a + 2) // 3][0], color=RED),
+                              Indicate(rr12[(b + 2) // 3][0], color=RED))
+
+                    self.play(t1_3_value.animate.update_text(r12[(a + 2) // 3]),
+                              t2_3_value.animate.update_text(r12[(b + 2) // 3]),
+                              ReplacementTransform(rr12[(a + 2) // 3].copy(), t1_3_value),
+                              ReplacementTransform(rr12[(b + 2) // 3].copy(), t2_3_value))
+
+                    if r12[n1 + (a + 2) // 3] < r12[(b + 2) // 3]:
+                        pd = 1
+                        self.play(cmp3.animate.update_text("<"))
+                        self.wait(0.8)
+                    else:
+                        pd = 0
+                        self.play(cmp3.animate.update_text(">"))
+                        self.wait(0.8)
+
+            if pd == 1:
+                self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
+                ssa.append(a)
+                i += 1
+                if i < n0:
+                    self.play(ari.animate.next_to(saa0[i], UP, buff=0.1))
+                if i == n0:
+                    while j < n12:
+                        self.play(arj.animate.next_to(saa12[j], UP, buff=0.1))
+                        self.play(ReplacementTransform(saa12[j].copy(), saa[len(ssa)]))
+                        ssa.append(sa12[j])
+                        j += 1
+            else: 
+                self.play(ReplacementTransform(saa12[j].copy(), saa[len(ssa)]))
+                ssa.append(b)
+                j += 1
+                if j < n12:
+                    self.play(arj.animate.next_to(saa12[j], UP, buff=0.1))
+                if j == n12:
+                    while i < n0:
+                        self.play(ari.animate.next_to(saa0[i], UP, buff=0.1))
+                        self.play(ReplacementTransform(saa0[i].copy(), saa[len(ssa)]))
+                        ssa.append(sa0[i])
+                        i += 1
+
+            self.play(
+                    t1_1_value.animate.update_text(),
+                    t2_1_value.animate.update_text(),
+                    t1_2_title.animate.update_text(),
+                    t1_2_value.animate.update_text(),
+                    t1_3_title.animate.update_text(),
+                    t1_3_value.animate.update_text(),
+                    t2_2_title.animate.update_text(),
+                    t2_2_value.animate.update_text(),
+                    t2_3_title.animate.update_text(),
+                    t2_3_value.animate.update_text(),
+                    cmp1.animate.update_text(),
+                    cmp2.animate.update_text(),
+                    cmp3.animate.update_text()
+            )
 
         # merge sa0 and sa12
         sa = []
