@@ -338,7 +338,7 @@ class SuffixArray(Scene):
             self.play(Create(rect1), Create(rect2))
 
             self.play(ReplacementTransform(sss.copy(), rr12),
-                      ReplacemeentTransform(sss.copy(), saa12))
+                      ReplacementTransform(sss.copy(), saa12))
             
             self.play(ReplacementTransform(rr12, rr12_copy),
                       ReplacementTransform(saa12, saa12_copy))
@@ -691,7 +691,7 @@ class SuffixArray(Scene):
                     while i < n0:
                         sa.append(sa0[i])
                         i += 1
-        return sa, saa
+        return sa, sa_title, saa
 
     def radix_sort(self, t, a, N):
         queue_list = [list() for _ in range(N)]
