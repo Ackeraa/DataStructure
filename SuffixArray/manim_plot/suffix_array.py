@@ -12,7 +12,7 @@ class SuffixArray(Scene):
         self.t = list("cbacbacacb")
         t = [ord(x) - ord('a') + 1 for x in self.t]
         self.start()
-        self.sa = self.build(t, 256)
+        self.sa = self.build(t, 256, 0)
         self.end()
 
     def start(self):
@@ -307,11 +307,14 @@ class SuffixArray(Scene):
                               id_title, t_title, t12_title, sa12_title, r12_title))
             self.play(rr12.animate.lmove_to(tt))
             self.tt = rr12
-            sa12 = self.build(r12[:-1], n12, dep+1)
+            sa12, ss_title, sss = self.build(r12[:-1], n12, dep+1)
 
             rr12.next_to(r12_title, RIGHT, buff=0.2)
+            ss_title.next_to(r12_title, DOWN, buff=0.5)
+            sss.next_to(ss_title, RIGHT, buff=0.2)
             self.play(FadeIn(id_title, idd, t_title, tt, t12_title, tt12,
-                             sa12_title, saa12, r12_title, rr12))                                  
+                             sa12_title, saa12, r12_title, rr12,
+                             ss_title, sss))                                  
                              
             # recover to the right order
             for i in range(n12):
@@ -333,10 +336,13 @@ class SuffixArray(Scene):
             rect1 = self.plot_rect(n12, square_size, saa12[0].get_center(), RED)
             rect2 = self.plot_rect(n12, square_size, rr12[0].get_center(), RED)
             self.play(Create(rect1), Create(rect2))
+
+            self.play(ReplacementTransform(sss.copy(), rr12),
+                      ReplacemeentTransform(sss.copy(), saa12))
             
             self.play(ReplacementTransform(rr12, rr12_copy),
                       ReplacementTransform(saa12, saa12_copy))
-            self.play(FadeOut(rect1, rect2))
+            self.play(FadeOut(rect1, rect2, ss_title, sss))
             self.remove(rr12_copy, saa12_copy)
         
         # sa0 animation
@@ -428,6 +434,7 @@ class SuffixArray(Scene):
         t12_title_pos = t12_title.get_center()
         tt12_pos = tt12.get_center()
 
+        self.wait(0.8)
         self.play(FadeOut(t0_title, tt0),
                   sa0_title.animate.move_to(t0_title),
                   saa0.animate.move_to(tt0),
@@ -684,7 +691,7 @@ class SuffixArray(Scene):
                     while i < n0:
                         sa.append(sa0[i])
                         i += 1
-        return sa
+        return sa, saa
 
     def radix_sort(self, t, a, N):
         queue_list = [list() for _ in range(N)]
