@@ -123,8 +123,8 @@ class SuffixArray:
                 h = 0
                 continue
 
-            k = self.sa[rank[i] + 1]
-            while i + h < n and k + h < n and self.t[i + h] == self.t[k + h]:
+            j = self.sa[rank[i] + 1]
+            while i + h < n and j + h < n and self.t[i + h] == self.t[j + h]:
                 h += 1
             height[rank[i]] = h
 
