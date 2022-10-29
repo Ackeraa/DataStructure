@@ -364,14 +364,17 @@ class SuffixArray(Scene):
 
         vg = VGroup()
         vgg = VGroup()
+        vgi = []
 
         vg0 = VGroup()
         for i in t0:
             vg0.add(tt[i].copy())
+            vgi.append([t[i]])
         
         vg1 = VGroup()
         for i in range(n0):
             vg1.add(rr12[i].copy())
+            vgi[i].append(r12[i])
 
         for i in range(n0):
             self.play(Indicate(tt[i * 3][0], color=BLACK),
@@ -401,8 +404,9 @@ class SuffixArray(Scene):
         sa0 = [i for i in t0]
         for i in range(n0):
             for j in range(i + 1, n0):
-                if vg[i][0][1].text + vg[i][1][1].text > vg[j][0][1].text + vg[j][1][1].text:
+                if (vgi[i][0], vgi[i][1]) > (vgi[j][0], vgi[j][1]):
                     vg[i], vg[j] = vg[j], vg[i]
+                    vgi[i], vgi[j] = vgi[j], vgi[i]
                     sa0[i], sa0[j] = sa0[j], sa0[i]
 
         ords1 = VGroup(*[MathTex(str(i), font_size=24, color=BLACK) for i in sa0])
