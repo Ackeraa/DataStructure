@@ -1,6 +1,7 @@
-# Range Minimun Queries(Part One)
+# Range Minimun Queries
 
-**算法[讲解](https://Ackeraa.github.io/2020/10/29/rmq/)**
+**算法[笔记(Part I)](https://Ackeraa.github.io/2020/10/29/rmq/)**
+**算法[笔记(Part II)](https://Ackeraa.github.io/2021/01/29/rmq2/)**
 
 **代码目录：**
 

@@ -1222,6 +1222,54 @@ class Fig15(Scene):
 class Fig16(Scene):
     def construct(self):
         self.camera.background_color = WHITE
+        t = "cbacbacacb"
+        n = len(t)
+
+        sa = [t[i:] for i in range(n)]
+        ids = sorted(range(n), key=sa.__getitem__)
+        sa.sort()
+        
+        hh = []
+        for i in range(n-1):
+            h = 0
+            for j in range(min(len(sa[i]), len(sa[i+1]))):
+                if sa[i][j] == sa[i+1][j]:
+                    h += 1
+                else:
+                    break
+            hh.append(h)
+        hh.append(0)
+        saa = VGroup()
+        for x in sa:
+            a = Array(x, square_size=0.5)
+            saa.add(a)
+        saa.arrange(DOWN, buff=0).shift(RIGHT*0.5)
+
+        for a in saa:
+            a.shift((n - len(a)) / 4 * LEFT)
+        self.add(saa)
+        
+        hi = VGroup()
+        for i in range(n - 1):
+            id1 = MathTex(str(hh[i]), color=BLACK, font_size=20)
+            sq1 = Square(0.5).next_to(saa[i][0], LEFT, buff=0)
+            id1.move_to(sq1.get_center())
+            hi.add(id1)
+        hi.shift(DOWN*0.3)
+        self.add(hi)
+
+        self.wait()
+        self.play(saa[:3].animate.shift(UP*0.6),
+                  saa[6:].animate.shift(DOWN*0.6),
+                  FadeOut(hi[2], hi[5]),
+                  hi[:2].animate.shift(UP*0.6),
+                  hi[6:].animate.shift(DOWN*0.6))
+
+        self.wait()
+
+class Fig17(Scene):
+    def construct(self):
+        self.camera.background_color = WHITE
         self.t = "cbacbacacb$"
         suffix_array = SuffixArray(self.t)
         self.sa = suffix_array.sa
@@ -1264,6 +1312,7 @@ class Fig16(Scene):
                 l = self.sa[v.index]
                 r = l + self.height[v.index]
                 c = self.t[l + node.r - node.l]
+                print(v.index, c, l, r)
                 node.children[c] = SuffixTreeNode(str(v.index), l, r)
                 self.add_nodes1(v, node.children[c])
 
@@ -1309,7 +1358,11 @@ class Fig16(Scene):
     def add_nodes2(self, u, node, d=0):
         if node not in self.roots:
             self.play(Indicate(node.node, color=RED))
-            self.play(node.animate.set_text(self.t[node.l+d:node.r]))
+            if u.index == 9:
+                text = "ac"
+            else:
+                text = self.t[node.l+d:node.r]
+            self.play(node.animate.set_text(text))
         for v in (u.lchild, u.rchild):
             if v is None:
                 if self.cnt == len(self.sa):
@@ -1321,7 +1374,8 @@ class Fig16(Scene):
                 e = node.add_edge(vnode)
                 vnode.move_to([self.hh[self.cnt].get_center()[0], node.node.get_center()[1] - 1.2, 0])
                 self.play(FadeIn(vnode, e))
-                self.play(vnode.animate.set_text(self.t[l+node.r-node.l:]))
+                text = self.t[l+node.r-node.l:]
+                self.play(vnode.animate.set_text(text))
                 node.children[c] = vnode
                 self.cnt += 1
             else:
