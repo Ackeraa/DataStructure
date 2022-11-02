@@ -4,7 +4,7 @@ import queue
 class TrieNode:
     
     def __init__(self, pattern=None):
-        self.children = defaultdict(TrieNode) # could use hash table to get linear time.
+        self.children = defaultdict(TrieNode)
         self.pattern = None
         self.suffix_link = None
         self.output_link = None

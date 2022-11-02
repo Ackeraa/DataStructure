@@ -66,7 +66,7 @@ class SuffixArray:
 
         # recursive build if r12 contains same order
         if num < n12:
-            sa12 = self.build(r12, n12)
+            sa12 = self.build(r12[:-1], n12)
             # recover to the right order
             for i in range(n12):
                 r12[sa12[i]] = i + 1

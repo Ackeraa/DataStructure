@@ -5,7 +5,7 @@ from suffix_array import SuffixArray
 
 class SuffixTreeNode:
     def __init__(self, l=0, r=0):
-        self.children = {} # could use hash table to get linear time.
+        self.children = {} 
         self.l = l
         self.r = r
 
