@@ -6,43 +6,62 @@ class TreeNode:
 
 class BinarySearchTree:
     def __init__(self, a):
-        self.root = TreeNode(a[0])
-        for x in a[1:]:
-            self.insert(self.root, x)
+        for x in a:
+            self.insert(TreeNode(x))
 
-    def insert(self, u, value):
-        if value <= u.value:
-            if u.lchild is None:
-                u.lchild = TreeNode(value)
-            else:
-                self.insert(u.lchild, value)
-        else:
-            if u.rchild is None:
-                u.rchild = TreeNode(value)
-            else:
-                self.insert(u.rchild, value)
+    def min(self):
+        u = self.root
+        while u.left is not None:
+            u = u.left
 
-    def find(self, u, value):
+        return u
+
+    def max(self):
+        u = self.root
+        while u.right is not None:
+            u = u.right
+
+        return u
+
+    def successor(self, u):
+        if u.right is not None:
+            return self.min(u.right)
+        p = u.parent
+        while p is not None and u == p.right:
+            u = p
+            p = p.parent
+
+        return p
+
+    def predecessor(self):
+        if u.left is not None:
+            return self.max(u.left)
+        p = u.parent
+        while p is not None and u == p.left:
+            u = p
+            p = p.parent
+
+        return p
+
+    def insert(self, v):
+        u = self.root
         if u is None:
-            return False
-        if u.value == value:
-            return True
-        if value < u.value:
-            return self.find(u.lchild, value)
-        else:
-            return self.find(u.rchild, value)
+            self.root = v
+            return
 
-    def delete(self, u, fa, value):
-        if value == u.value:
-            if u.lchild is None:
-                u.lchild = TreeNode(value)
+        while u is not None:
+            if v.value < u.value:
+                u = u.left
             else:
-                self.insert(u.lchild, value)
+                u = u.right
+        p = u.parent
+        if v.value < p.value:
+            p.left = v
         else:
-            if u.rchild is None:
-                u.rchild = TreeNode(value)
-            else:
-                self.insert(u.rchild, value)
+            p.right = v
+
+    def delete(self, value):
+        pass
 
     def traverse(self, u):
         pass
